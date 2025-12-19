@@ -80,7 +80,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
-    margin-top: 20px;
+    margin: 1rem;
 }
 
 .ticket-card {
@@ -247,18 +247,6 @@ body {
     overflow: hidden;
 }
 
-/* Decoración Azul de Fondo */
-.header-decoration {
-    position: absolute;
-    top: 0; right: 0;
-    width: 250px; height: 250px;
-    background-color: #eff6ff;
-    border-radius: 50%;
-    transform: translate(30%, -30%);
-    filter: blur(40px);
-    z-index: 0;
-}
-
 /* Layout Flexible */
 .header-content-wrapper {
     position: relative;
@@ -279,22 +267,12 @@ body {
 .header-logo-section {
     display: flex;
     justify-content: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-@media (min-width: 768px) {
-    .header-logo-section {
-        padding-bottom: 0;
-        padding-right: 30px;
-        border-bottom: none;
-        border-right: 1px solid #f1f5f9;
-    }
+    padding-right: 1.25rem;
+    border-right: 1px solid #f1f5f9;
 }
 
 .custom-logo {
-    max-width: 150px;
-    max-height: 150px;
+    max-width: 256px;
     object-fit: contain;
     display: block;
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
@@ -302,7 +280,7 @@ body {
 
 .brand-logo-container {
     position: relative;
-    width: 160px; height: 160px;
+    width: 256px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -373,30 +351,38 @@ body {
     padding: 4px 12px;
     background-color: #dbeafe; /* Azul claro */
     color: var(--primary-color);
-    font-size: 0.75rem;
-    font-weight: bold;
+    font-size: 1em;
+    font-weight: 600;
     text-transform: uppercase;
-    border-radius: 99px;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
 }
 
 .icon-small { font-size: 16px; }
 
 .header-main-title {
-    font-size: 1.8rem;
+    font-size: 2em;
     font-weight: 800;
     color: #0f172a;
     line-height: 1.2;
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
 }
 
 .text-brand { color: var(--primary-color); }
 
 .header-subtitle {
     color: #64748b;
-    font-size: 1rem;
+    font-size: 1.25em;
+    font-weight: 600;
     margin: 0;
-    max-width: 400px;
+}
+
+.footer-subtitle {
+    color: var(--primary-color);
+    font-size: 1.25em;
+    font-weight: 800;
+    padding-bottom: 1rem;
+    text-transform: uppercase;
 }
 
 /* --- TARJETAS (PREMIOS Y COSTO) --- */
@@ -425,8 +411,8 @@ body {
 }
 
 .card-label {
-    font-size: 0.75rem;
-    font-weight: bold;
+    font-size: 1em;
+    font-weight: 600;
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -439,8 +425,9 @@ body {
 .icon-gold { color: #eab308; font-size: 16px; }
 
 .prize-text {
-    font-size: 0.95rem;
     color: #334155;
+    font-size: 1.25em;
+    font-weight: 600;
     line-height: 1.4;
     white-space: pre-line;
 }
@@ -453,37 +440,26 @@ body {
     min-width: 140px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     transition: transform 0.2s;
 }
 
 .cost-card:hover { transform: translateY(-4px); }
 
 .cost-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
     color: #bfdbfe;
     display: block;
+    font-size: 1em;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .cost-amount-wrapper { margin: 5px 0; }
 
 .cost-amount {
-    font-size: 1.8rem;
-    font-weight: bold;
+    font-size: 3em;
+    font-weight: 800;
     line-height: 1;
 }
 
 .currency { font-size: 0.8rem; opacity: 0.8; font-weight: 500; }
-
-.cost-pill {
-    background-color: rgba(255,255,255,0.2);
-    color: white;
-    font-size: 0.65rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    padding: 4px;
-    border-radius: 4px;
-    cursor: default;
-}

@@ -473,7 +473,9 @@ function downloadCanvas() {
 }
 
 function exportReportImage() {
-    html2canvas(document.getElementById('tickets-container')).then(canvas => {
+    html2canvas(document.getElementById('capture-area'), {
+        scale: 2
+    }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Lista-${currentRaffle.title}.png`;
         link.href = canvas.toDataURL();
