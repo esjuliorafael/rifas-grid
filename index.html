@@ -98,6 +98,21 @@
             </div>
 
             <div id="capture-area">
+
+                <div class="stats-bar">
+                    <div class="stat-box avail">
+                        <span class="ticket-status-text">Disponibles</span>
+                        <span id="stat-avail" class="stat-number">0</span>
+                    </div>
+                    <div class="stat-box reserved">
+                        <span class="ticket-status-text" style="color: var(--warning-color);">Apartados</span>
+                        <span id="stat-reserved" class="stat-number" style="color: var(--warning-color);">0</span>
+                    </div>
+                    <div class="stat-box paid">
+                        <span class="ticket-status-text" style="color: var(--success-color);">Pagados</span>
+                        <span id="stat-paid" class="stat-number" style="color: var(--success-color);">0</span>
+                    </div>
+                </div>
                 
                 <header class="raffle-header">
                     <div class="header-decoration"></div>
@@ -148,18 +163,16 @@
                         </div>
                     </div>
                 </header>
-                <div class="stats-bar">
-                    <div class="stat-box avail">
-                        <span class="ticket-status-text">Disponibles</span>
-                        <span id="stat-avail" class="stat-number">0</span>
+
+                <div id="action-bar" class="action-bar hidden">
+                    <div style="font-size: 1.2rem;">
+                        <span id="selected-count" style="color: #fcd34d; font-weight: bold; font-size: 1.5rem;">0</span> seleccionados
                     </div>
-                    <div class="stat-box reserved">
-                        <span class="ticket-status-text" style="color: var(--warning-color);">Apartados</span>
-                        <span id="stat-reserved" class="stat-number" style="color: var(--warning-color);">0</span>
-                    </div>
-                    <div class="stat-box paid">
-                        <span class="ticket-status-text" style="color: var(--success-color);">Pagados</span>
-                        <span id="stat-paid" class="stat-number" style="color: var(--success-color);">0</span>
+                    <div class="flex gap-small" style="flex-wrap: wrap;">
+                        <button onclick="openReserveModal()" class="btn btn-warning">Apartar</button>
+                        <button onclick="bulkUpdateStatus('paid')" class="btn btn-success">Pagar</button>
+                        <button onclick="bulkUpdateStatus('available')" class="btn btn-secondary">Liberar</button>
+                        <button onclick="clearSelection()" class="btn" style="color: #bfdbfe; text-decoration: underline;">Cancelar</button>
                     </div>
                 </div>
 
@@ -167,17 +180,6 @@
                 
                 <div class="text-center" style="margin-top: 30px; color: #9ca3af; font-size: 0.8rem;">
                     Lista de participantes actualizada al momento
-                </div>
-            </div>
-            <div id="action-bar" class="action-bar hidden">
-                <div style="font-size: 1.2rem;">
-                    <span id="selected-count" style="color: #fcd34d; font-weight: bold; font-size: 1.5rem;">0</span> seleccionados
-                </div>
-                <div class="flex gap-small" style="flex-wrap: wrap;">
-                    <button onclick="openReserveModal()" class="btn btn-warning">Apartar</button>
-                    <button onclick="bulkUpdateStatus('paid')" class="btn btn-success">Pagar</button>
-                    <button onclick="bulkUpdateStatus('available')" class="btn btn-secondary">Liberar</button>
-                    <button onclick="clearSelection()" class="btn" style="color: #bfdbfe; text-decoration: underline;">Cancelar</button>
                 </div>
             </div>
         </div>
