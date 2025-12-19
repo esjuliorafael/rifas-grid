@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Rifas</title>
+    
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,700,0,0" />
     <link rel="stylesheet" href="styles.css">
+    
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
@@ -23,7 +25,8 @@
 
             <div id="existing-raffles-container" class="raffle-list-container hidden">
                 <h3 class="section-title">Tus Rifas Activas</h3>
-                <div id="raffles-list"></div>
+                <div id="raffles-list">
+                    </div>
             </div>
         </div>
 
@@ -115,7 +118,6 @@
             <div id="capture-area">
                 
                 <header class="raffle-header">
-        
                     <div class="header-content-wrapper">
                         <div class="header-logo-section">
                             <div class="brand-logo-container">
@@ -125,7 +127,6 @@
         
                         <div class="header-info-section">
                             <div class="header-flex-row">
-                                
                                 <div class="header-text-block">
                                     <div class="badge-pill">Sorteo Especial</div>
                                     <h2 class="header-main-title">
@@ -137,7 +138,6 @@
                                 </div>
         
                                 <div class="header-cards-group">
-                                    
                                     <div class="info-card prize-card">
                                         <h3 class="card-label">
                                             <span class="material-symbols-outlined icon-gold">trophy</span> Premio
@@ -152,7 +152,6 @@
                                             <span class="currency">MXN</span>
                                         </div>
                                     </div>
-        
                                 </div>
                             </div>
                         </div>
@@ -167,7 +166,7 @@
                         <button onclick="openReserveModal()" class="btn btn-warning">Apartar</button>
                         <button onclick="bulkUpdateStatus('paid')" class="btn btn-success">Pagar</button>
                         <button onclick="bulkUpdateStatus('available')" class="btn btn-secondary">Liberar</button>
-                        <button onclick="clearSelection()" class="btn" style="color: #bfdbfe; text-decoration: underline;">Cancelar</button>
+                        <button onclick="clearSelection()" class="btn btn-cancel">Cancelar</button>
                     </div>
                 </div>
 
@@ -179,7 +178,9 @@
             </div>
         </div>
 
-    </div> <div id="modal-reserve" class="modal-overlay hidden">
+    </div> 
+    
+    <div id="modal-reserve" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Datos del Cliente</h3>
             <p>Boletos a apartar: <span id="modal-ticket-ids" style="font-weight: bold; color: var(--primary-color);"></span></p>

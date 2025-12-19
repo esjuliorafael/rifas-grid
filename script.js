@@ -1,25 +1,38 @@
-/* --- APP STATE --- */
+/* -------------------------------------------------------------------------- */
+/* ESTADO DE LA APLICACIÓN                               */
+/* -------------------------------------------------------------------------- */
 let allRaffles = []; 
 let currentRaffleIndex = null;
 let currentRaffle = null;
 let selectedIndices = new Set();
 
-/* --- INITIALIZATION --- */
+/* -------------------------------------------------------------------------- */
+/* INICIALIZACIÓN                               */
+/* -------------------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', loadFromServer);
 
-/* --- NAVIGATION --- */
+/* -------------------------------------------------------------------------- */
+/* NAVEGACIÓN                                  */
+/* -------------------------------------------------------------------------- */
 function showView(viewName) {
-    ['home', 'create', 'manage'].forEach(v => document.getElementById('view-'+v).classList.add('hidden'));
+    ['home', 'create', 'manage'].forEach(v => {
+        document.getElementById('view-' + v).classList.add('hidden');
+    });
+    
     document.getElementById('view-' + viewName).classList.remove('hidden');
     
     // Al volver al home, refrescar la lista
-    if(viewName === 'home') renderHomeList();
+    if (viewName === 'home') {
+        renderHomeList();
+    }
 }
 
-/* --- BACKEND --- */
+/* -------------------------------------------------------------------------- */
+/* BACKEND (Comunicación con PHP)                  */
+/* -------------------------------------------------------------------------- */
 async function saveToServer() {
     // Sincronizar rifa actual con la lista antes de guardar
-    if(currentRaffleIndex !== null && currentRaffle) {
+    if (currentRaffleIndex !== null && currentRaffle) {
         allRaffles[currentRaffleIndex] = currentRaffle;
     }
 
@@ -29,7 +42,9 @@ async function saveToServer() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(allRaffles) 
         }); 
-    } catch(e) { console.error("Error guardando:", e); }
+    } catch(e) { 
+        console.error("Error guardando:", e); 
+    }
 }
 
 async function loadFromServer() {
@@ -38,11 +53,11 @@ async function loadFromServer() {
         let data = await res.json();
         
         // Migración: si es un objeto único viejo, convertirlo a array
-        if(data && !Array.isArray(data) && data.tickets) {
+        if (data && !Array.isArray(data) && data.tickets) {
             data = [data];
         }
         
-        if(!data) data = [];
+        if (!data) data = [];
 
         allRaffles = data;
         renderHomeList();
@@ -53,13 +68,15 @@ async function loadFromServer() {
     }
 }
 
-/* --- HOME: LISTA DE RIFAS --- */
+/* -------------------------------------------------------------------------- */
+/* VISTA HOME: LISTA DE RIFAS                      */
+/* -------------------------------------------------------------------------- */
 function renderHomeList() {
     const listDiv = document.getElementById('raffles-list');
     const container = document.getElementById('existing-raffles-container');
     listDiv.innerHTML = '';
 
-    if(allRaffles.length > 0) {
+    if (allRaffles.length > 0) {
         container.classList.remove('hidden');
         
         allRaffles.forEach((raffle, index) => {
@@ -100,14 +117,22 @@ function selectRaffle(index) {
 }
 
 function deleteRaffle(index) {
-    if(!confirm("¿Borrar esta rifa? No hay vuelta atrás.")) return;
+    if (!confirm("¿Borrar esta rifa? No hay vuelta atrás.")) return;
+    
     allRaffles.splice(index, 1);
-    if(currentRaffleIndex === index) { currentRaffleIndex = null; currentRaffle = null; }
+    
+    if (currentRaffleIndex === index) { 
+        currentRaffleIndex = null; 
+        currentRaffle = null; 
+    }
+    
     saveToServer();
     renderHomeList();
 }
 
-/* --- CREAR RIFA --- */
+/* -------------------------------------------------------------------------- */
+/* CREAR RIFA                                  */
+/* -------------------------------------------------------------------------- */
 function handleCreateRaffle(e) {
     e.preventDefault();
     const title = document.getElementById('r-title').value;
@@ -116,22 +141,39 @@ function handleCreateRaffle(e) {
     const quantity = parseInt(document.getElementById('r-quantity').value);
     const mode = document.querySelector('input[name="r-mode"]:checked').value;
 
+    // Generar oportunidades extra
     let extras = [];
     let startExtra = quantity + 1;
-    for(let i = startExtra; i <= 99; i++) extras.push(i.toString().padStart(2, '0'));
-    if(quantity !== 33) extras.push("00");
+    for (let i = startExtra; i <= 99; i++) {
+        extras.push(i.toString().padStart(2, '0'));
+    }
+    if (quantity !== 33) extras.push("00");
 
-    if(mode === 'random') extras.sort(() => Math.random() - 0.5);
+    // Mezclar si es aleatorio
+    if (mode === 'random') {
+        extras.sort(() => Math.random() - 0.5);
+    }
 
     let tickets = [];
     const chances = (quantity === 25) ? 3 : (quantity === 33) ? 2 : 1;
 
-    for(let i = 1; i <= quantity; i++) {
+    for (let i = 1; i <= quantity; i++) {
         let tNum = i.toString().padStart(2, '0');
         let myExtras = [];
-        for(let c = 0; c < chances; c++) if(extras.length) myExtras.push(extras.shift());
-        if(mode === 'random') myExtras.sort();
-        tickets.push({ number: tNum, extras: myExtras, status: 'available', client: '', phone: '' });
+        
+        for (let c = 0; c < chances; c++) {
+            if (extras.length) myExtras.push(extras.shift());
+        }
+        
+        if (mode === 'random') myExtras.sort();
+        
+        tickets.push({ 
+            number: tNum, 
+            extras: myExtras, 
+            status: 'available', 
+            client: '', 
+            phone: '' 
+        });
     }
 
     const newRaffle = { title, prizes, cost, tickets };
@@ -141,7 +183,9 @@ function handleCreateRaffle(e) {
     e.target.reset();
 }
 
-/* --- EDITAR RIFA (NUEVO) --- */
+/* -------------------------------------------------------------------------- */
+/* EDITAR RIFA                                 */
+/* -------------------------------------------------------------------------- */
 function openEditModal() {
     document.getElementById('edit-title').value = currentRaffle.title;
     document.getElementById('edit-prizes').value = currentRaffle.prizes;
@@ -154,7 +198,7 @@ function saveEditRaffle() {
     const newPrizes = document.getElementById('edit-prizes').value;
     const newCost = parseInt(document.getElementById('edit-cost').value);
 
-    if(!newTitle || !newCost) return alert("Título y Costo requeridos");
+    if (!newTitle || !newCost) return alert("Título y Costo requeridos");
 
     currentRaffle.title = newTitle;
     currentRaffle.prizes = newPrizes;
@@ -166,13 +210,14 @@ function saveEditRaffle() {
     closeModal('modal-edit');
 }
 
-/* --- RENDER GRID --- */
+/* -------------------------------------------------------------------------- */
+/* RENDER GRID (GESTIÓN)                       */
+/* -------------------------------------------------------------------------- */
 function renderGrid() {
     document.getElementById('m-title').innerText = currentRaffle.title;
     
-    // Mostrar premios si el elemento existe (agregado en nueva estructura)
     const prizeEl = document.getElementById('m-prizes');
-    if(prizeEl) prizeEl.innerText = currentRaffle.prizes;
+    if (prizeEl) prizeEl.innerText = currentRaffle.prizes;
 
     document.getElementById('m-cost-display').innerText = '$' + currentRaffle.cost;
     
@@ -195,7 +240,6 @@ function renderGrid() {
         if (!isSelected && t.status === 'paid') icon = 'verified';
         if (!isSelected && t.status === 'reserved') icon = 'person';
 
-        // Traducción
         let statusLabel = ''; 
         if (t.status === 'available') statusLabel = 'Disponible';
         if (t.status === 'reserved') statusLabel = 'Apartado';
@@ -217,38 +261,51 @@ function renderGrid() {
     updateActionBar();
 }
 
-/* --- SELECCIÓN Y ACCIONES --- */
+/* -------------------------------------------------------------------------- */
+/* SELECCIÓN Y ACCIONES                        */
+/* -------------------------------------------------------------------------- */
 function toggleSelection(index) {
-    if(selectedIndices.has(index)) selectedIndices.delete(index);
+    if (selectedIndices.has(index)) selectedIndices.delete(index);
     else selectedIndices.add(index);
     renderGrid();
 }
-function clearSelection() { selectedIndices.clear(); renderGrid(); }
+
+function clearSelection() { 
+    selectedIndices.clear(); 
+    renderGrid(); 
+}
 
 function updateActionBar() {
     const bar = document.getElementById('action-bar');
-    if(selectedIndices.size > 0) {
-        bar.classList.remove('hidden'); bar.classList.add('flex');
+    if (selectedIndices.size > 0) {
+        bar.classList.remove('hidden'); 
+        bar.classList.add('flex');
         document.getElementById('selected-count').innerText = selectedIndices.size;
     } else {
-        bar.classList.add('hidden'); bar.classList.remove('flex');
+        bar.classList.add('hidden'); 
+        bar.classList.remove('flex');
     }
 }
 
 function openReserveModal() {
     if (selectedIndices.size === 0) return alert("Selecciona boletos");
+    
     const nums = Array.from(selectedIndices).map(i => currentRaffle.tickets[i].number).join(', ');
     document.getElementById('modal-ticket-ids').innerText = nums;
     document.getElementById('input-name').value = '';
     document.getElementById('input-phone').value = '';
     document.getElementById('modal-reserve').classList.remove('hidden');
 }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function closeModal(id) { 
+    document.getElementById(id).classList.add('hidden'); 
+}
 
 function confirmReserve() {
     const name = document.getElementById('input-name').value;
     const phone = document.getElementById('input-phone').value;
-    if(!name) return alert("Nombre obligatorio");
+    
+    if (!name) return alert("Nombre obligatorio");
     
     let reservedData = { numbers: [], extras: [], total: 0, client: name };
 
@@ -256,6 +313,7 @@ function confirmReserve() {
         currentRaffle.tickets[index].status = 'reserved';
         currentRaffle.tickets[index].client = name;
         currentRaffle.tickets[index].phone = phone;
+        
         reservedData.numbers.push(currentRaffle.tickets[index].number);
         reservedData.extras.push(...currentRaffle.tickets[index].extras);
         reservedData.total += currentRaffle.cost;
@@ -267,16 +325,27 @@ function confirmReserve() {
     renderGrid();
     saveToServer();
 
-    drawTicket({ numbers: reservedData.numbers.join(', '), client: name, extras: reservedData.extras.join(' - '), total: reservedData.total });
+    drawTicket({ 
+        numbers: reservedData.numbers.join(', '), 
+        client: name, 
+        extras: reservedData.extras.join(' - '), 
+        total: reservedData.total 
+    });
+    
     document.getElementById('modal-ticket').classList.remove('hidden');
 }
 
 function bulkUpdateStatus(status) {
-    if(!confirm('¿Confirmar cambio de estado?')) return;
+    if (!confirm('¿Confirmar cambio de estado?')) return;
+    
     selectedIndices.forEach(index => {
         currentRaffle.tickets[index].status = status;
-        if(status === 'available') { currentRaffle.tickets[index].client = ''; currentRaffle.tickets[index].phone = ''; }
+        if (status === 'available') { 
+            currentRaffle.tickets[index].client = ''; 
+            currentRaffle.tickets[index].phone = ''; 
+        }
     });
+    
     clearSelection();
     updateStats();
     renderGrid();
@@ -286,12 +355,15 @@ function bulkUpdateStatus(status) {
 function updateStats() {
     const counts = { available: 0, reserved: 0, paid: 0 };
     currentRaffle.tickets.forEach(t => counts[t.status]++);
+    
     document.getElementById('stat-avail').innerText = counts.available;
     document.getElementById('stat-reserved').innerText = counts.reserved;
     document.getElementById('stat-paid').innerText = counts.paid;
 }
 
-/* --- CANVAS --- */
+/* -------------------------------------------------------------------------- */
+/* GENERACIÓN DE TICKET (CANVAS)               */
+/* -------------------------------------------------------------------------- */
 function drawTicket(data) {
     const canvas = document.getElementById('ticket-canvas');
     const ctx = canvas.getContext('2d');
@@ -300,9 +372,9 @@ function drawTicket(data) {
     canvas.width = 500; 
     canvas.height = 850;
     
-    // Colores basados en tu imagen de referencia
-    const colorFondo = "#e5e5e5";    // Gris claro de fondo
-    const colorRojo = "#991b1b";     // Rojo oscuro (tipo Marizcal)
+    // Colores
+    const colorFondo = "#e5e5e5";    
+    const colorRojo = "#991b1b";     
     const colorBlanco = "#ffffff";
     const colorTextoOscuro = "#1f2937";
     const colorTextoGris = "#6b7280";
@@ -315,21 +387,18 @@ function drawTicket(data) {
     ctx.fillStyle = colorRojo; 
     ctx.font = "bold 30px 'Segoe UI', Arial, sans-serif";
     ctx.textAlign = "center";
-    // Usamos el nombre de la marca (puedes cambiar "RIFAS MARIZCAL" por lo que gustes)
     ctx.fillText("RIFAS MARIZCAL", canvas.width / 2, 60);
 
-    // --- TARJETA ROJA (ESTADO Y MONTO) ---
-    // Dibujamos el rectángulo rojo redondeado superior
+    // --- TARJETA ROJA ---
     drawRoundedRect(ctx, 40, 90, 420, 220, 30);
     ctx.fillStyle = colorRojo;
     ctx.fill();
 
-    // Icono de Check (Círculo blanco transparente + palomita)
+    // Icono
     ctx.beginPath();
     ctx.arc(canvas.width / 2, 150, 25, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,255,255,0.2)"; // Círculo semitransparente
+    ctx.fillStyle = "rgba(255,255,255,0.2)"; 
     ctx.fill();
-    // Dibujo simple de palomita
     ctx.beginPath();
     ctx.moveTo(238, 150); ctx.lineTo(248, 160); ctx.lineTo(265, 138);
     ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.stroke();
@@ -337,46 +406,33 @@ function drawTicket(data) {
     // Texto de Estado
     ctx.fillStyle = "white";
     ctx.font = "bold 24px Arial";
-    // Detectamos si es apartado o pagado para cambiar el texto
-    let statusText = "BOLETO APARTADO"; 
-    // Si todos los boletos seleccionados están pagados, cambiamos el texto
-    // (Esta lógica es visual, asume que 'data' viene del flujo de apartado, pero se ve bien)
-    ctx.fillText(statusText, canvas.width / 2, 200);
+    ctx.fillText("BOLETO APARTADO", canvas.width / 2, 200);
 
     // Etiqueta MONTO
     ctx.font = "14px Arial";
     ctx.fillStyle = "rgba(255,255,255,0.8)";
     ctx.fillText("MONTO", canvas.width / 2, 235);
 
-    // Cantidad ($)
+    // Cantidad
     ctx.font = "bold 60px Arial";
     ctx.fillStyle = "white";
     ctx.fillText(`$${data.total}.00`, canvas.width / 2, 290);
 
-    // --- TARJETA BLANCA (DETALLES) ---
-    // Dibujamos el rectángulo blanco inferior
+    // --- TARJETA BLANCA ---
     drawRoundedRect(ctx, 40, 330, 420, 450, 30);
     ctx.fillStyle = colorBlanco;
     ctx.fill();
 
-    // --- EFECTO DE RECORTE (LOS CÍRCULOS A LOS LADOS) ---
-    // Esto crea el efecto de "ticket cortado" que se ve en la imagen
-    const cutY = 650; // Altura donde va el corte
-    ctx.globalCompositeOperation = 'destination-out'; // Modo "Borrador"
+    // --- EFECTO DE RECORTE ---
+    const cutY = 650;
+    ctx.globalCompositeOperation = 'destination-out';
     
-    // Círculo izquierdo
-    ctx.beginPath();
-    ctx.arc(40, cutY, 15, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Círculo derecho
-    ctx.beginPath();
-    ctx.arc(460, cutY, 15, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(40, cutY, 15, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(460, cutY, 15, 0, Math.PI * 2); ctx.fill();
 
-    ctx.globalCompositeOperation = 'source-over'; // Volver a modo normal
+    ctx.globalCompositeOperation = 'source-over';
 
-    // Línea punteada entre los cortes
+    // Línea punteada
     ctx.beginPath();
     ctx.setLineDash([10, 10]);
     ctx.moveTo(60, cutY);
@@ -384,28 +440,27 @@ function drawTicket(data) {
     ctx.strokeStyle = "#d1d5db";
     ctx.lineWidth = 2;
     ctx.stroke();
-    ctx.setLineDash([]); // Resetear
+    ctx.setLineDash([]);
 
-    // --- CONTENIDO DE LA TARJETA BLANCA ---
+    // --- DATOS DEL TICKET ---
     ctx.textAlign = "left";
     let leftMargin = 80;
 
-    // 1. Título de la Rifa
-    ctx.fillStyle = "#9ca3af"; // Gris claro etiquetas
+    // 1. Título
+    ctx.fillStyle = "#9ca3af";
     ctx.font = "bold 12px Arial";
     ctx.fillText("RIFA NO. / TÍTULO", leftMargin, 380);
 
-    ctx.fillStyle = colorTextoOscuro; // Texto oscuro
+    ctx.fillStyle = colorTextoOscuro;
     ctx.font = "bold 20px Arial";
-    // Ajuste de texto largo (simple)
     let titleText = currentRaffle.title.substring(0, 28); 
-    if(currentRaffle.title.length > 28) titleText += "...";
+    if (currentRaffle.title.length > 28) titleText += "...";
     ctx.fillText(titleText.toUpperCase(), leftMargin, 410);
+    
     ctx.font = "16px Arial";
     ctx.fillStyle = colorTextoOscuro;
     ctx.fillText(`BOLETO $${currentRaffle.cost} PESOS`, leftMargin, 435);
 
-    // Línea separadora suave
     ctx.fillStyle = "#f3f4f6";
     ctx.fillRect(leftMargin, 455, 340, 2);
 
@@ -418,11 +473,10 @@ function drawTicket(data) {
     ctx.font = "bold 24px Arial";
     ctx.fillText(data.client.toUpperCase(), leftMargin, 525);
 
-    // Línea separadora suave
     ctx.fillStyle = "#f3f4f6";
     ctx.fillRect(leftMargin, 545, 340, 2);
 
-    // 3. Boletos (Números Grandes)
+    // 3. Boletos
     ctx.fillStyle = "#9ca3af";
     ctx.font = "bold 12px Arial";
     ctx.fillText("BOLETOS", leftMargin, 580);
@@ -431,14 +485,13 @@ function drawTicket(data) {
     ctx.font = "bold 36px Arial";
     ctx.fillText(data.numbers, leftMargin, 625);
 
-    // 4. Oportunidades (Debajo de la línea punteada)
+    // 4. Oportunidades
     ctx.fillStyle = "#9ca3af";
     ctx.font = "bold 12px Arial";
     ctx.fillText("OPORTUNIDADES", leftMargin, 690);
 
-    ctx.fillStyle = "#4b5563"; // Gris medio
+    ctx.fillStyle = "#4b5563";
     ctx.font = "20px monospace";
-    // Dividir oportunidades si son muchas
     let ops = data.extras;
     if (ops.length > 25) ops = ops.substring(0, 25) + "...";
     ctx.fillText(ops, leftMargin, 720);
@@ -450,7 +503,6 @@ function drawTicket(data) {
     ctx.fillText("GRACIAS POR SU APOYO", canvas.width / 2, 810);
 }
 
-// Función auxiliar para dibujar rectángulos redondeados perfectos
 function drawRoundedRect(ctx, x, y, width, height, radius) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);

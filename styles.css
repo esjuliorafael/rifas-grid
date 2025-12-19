@@ -1,8 +1,11 @@
-/* --- VARIABLES & BASE --- */
+/* =========================================
+   VARIABLES & BASE
+========================================= */
 :root {
     --primary-color: #1e40af;    /* Azul fuerte */
     --success-color: #22c55e;    /* Verde éxito */
     --warning-color: #f97316;    /* Naranja alerta */
+    --cancel-color: #ef4444;     /* Rojo cancelar */
     --bg-color: #f3f4f6;         /* Gris fondo */
     --card-bg: #ffffff;
     --text-dark: #1f2937;
@@ -18,15 +21,36 @@ body {
     line-height: 1.5;
 }
 
-/* --- UTILITIES --- */
-.hidden { display: none !important; }
-.text-center { text-align: center; }
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.gap-small { gap: 10px; }
-.gap-medium { gap: 20px; }
+/* =========================================
+   UTILITIES
+========================================= */
+.hidden {
+    display: none !important;
+}
 
-/* --- CONTAINERS --- */
+.text-center {
+    text-align: center;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.gap-small {
+    gap: 10px;
+}
+
+.gap-medium {
+    gap: 20px;
+}
+
+/* =========================================
+   CONTAINERS & CARDS
+========================================= */
 .main-container {
     max-width: 1000px;
     margin: 0 auto;
@@ -41,7 +65,9 @@ body {
     margin-bottom: 20px;
 }
 
-/* --- BUTTONS --- */
+/* =========================================
+   BUTTONS
+========================================= */
 .btn {
     padding: 15px 30px;
     border: none;
@@ -55,16 +81,56 @@ body {
     justify-content: center;
     gap: 10px;
 }
-.btn:active { transform: scale(0.98); }
-.btn-primary { background-color: var(--primary-color); color: white; }
-.btn-success { background-color: var(--success-color); color: white; }
-.btn-warning { background-color: var(--warning-color); color: white; }
-.btn-secondary { background-color: #e5e7eb; color: #374151; }
-.btn-large { font-size: 1.5rem; padding: 20px 40px; width: 100%; }
 
-/* --- FORMS --- */
-.form-group { margin-bottom: 20px; }
-.form-label { display: block; font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; }
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.btn-cancel {
+    background-color: var(--cancel-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.btn-large {
+    font-size: 1.5rem;
+    padding: 20px 40px;
+    width: 100%;
+}
+
+/* =========================================
+   FORMS
+========================================= */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
 .form-input {
     width: 100%;
     padding: 15px;
@@ -73,9 +139,15 @@ body {
     border-radius: 10px;
     box-sizing: border-box; 
 }
-.form-input:focus { border-color: var(--primary-color); outline: none; }
 
-/* --- TICKET GRID (MANAGE VIEW) --- */
+.form-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* =========================================
+   TICKET GRID (VISTA DE GESTIÓN)
+========================================= */
 .ticket-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -97,24 +169,63 @@ body {
     flex-direction: column;
     justify-content: space-between;
 }
-.ticket-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
 
-/* Estados del Ticket */
-.ticket-card.selected { border-color: var(--primary-color); background-color: #eff6ff; }
-.ticket-card.status-reserved { border-color: var(--warning-color); background-color: #fff7ed; }
-.ticket-card.status-paid { border-color: var(--success-color); background-color: #f0fdf4; }
+.ticket-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
 
-.ticket-number { font-size: 2.5rem; font-weight: 900; color: #374151; display: block; }
-.ticket-status-text { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: #6b7280; }
-.ticket-client { font-size: 0.9rem; font-weight: bold; color: var(--primary-color); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-transform: uppercase; }
+/* Estados Visuales del Ticket */
+.ticket-card.selected {
+    border-color: var(--primary-color);
+    background-color: #eff6ff;
+}
 
-/* --- STATS BAR --- */
+.ticket-card.status-reserved {
+    border-color: var(--warning-color);
+    background-color: #fff7ed;
+}
+
+.ticket-card.status-paid {
+    border-color: var(--success-color);
+    background-color: #f0fdf4;
+}
+
+/* Elementos internos del Ticket */
+.ticket-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #374151;
+    display: block;
+}
+
+.ticket-status-text {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #6b7280;
+}
+
+.ticket-client {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+}
+
+/* =========================================
+   STATS BAR (BARRA DE ESTADÍSTICAS)
+========================================= */
 .stats-bar {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 15px;
     margin-bottom: 20px;
 }
+
 .stat-box {
     background: white;
     padding: 15px;
@@ -123,12 +234,28 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border-left: 5px solid #ccc;
 }
-.stat-box.avail { border-color: #9ca3af; }
-.stat-box.reserved { border-color: var(--warning-color); }
-.stat-box.paid { border-color: var(--success-color); }
-.stat-number { font-size: 1.8rem; font-weight: bold; display: block; }
 
-/* --- ACTION BAR (STICKY) --- */
+.stat-box.avail {
+    border-color: #9ca3af;
+}
+
+.stat-box.reserved {
+    border-color: var(--warning-color);
+}
+
+.stat-box.paid {
+    border-color: var(--success-color);
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    display: block;
+}
+
+/* =========================================
+   ACTION BAR (FLOTANTE)
+========================================= */
 .action-bar {
     position: sticky;
     top: 10px;
@@ -145,15 +272,22 @@ body {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: slideDown 0.3s ease;
 }
-@keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-/* --- RAFFLE LIST (HOME VIEW) --- */
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* =========================================
+   RAFFLE LIST (VISTA HOME)
+========================================= */
 .raffle-list-container {
     margin-top: 50px;
     text-align: left;
     border-top: 1px solid #e5e7eb;
     padding-top: 20px;
 }
+
 .section-title {
     font-size: 1.5rem;
     font-weight: bold;
@@ -180,11 +314,26 @@ body {
     cursor: pointer;
     transition: transform 0.2s;
 }
-.raffle-summary-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
-.raffle-summary-title { font-size: 1.4rem; font-weight: bold; color: #111; margin: 0 0 5px 0; }
-.raffle-summary-info { font-size: 1rem; color: #6b7280; margin-bottom: 15px; }
 
-/* Progress Bar */
+.raffle-summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+
+.raffle-summary-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #111;
+    margin: 0 0 5px 0;
+}
+
+.raffle-summary-info {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 15px;
+}
+
+/* Barra de Progreso */
 .progress-track {
     width: 100%;
     background-color: #e5e7eb;
@@ -193,28 +342,46 @@ body {
     overflow: hidden;
     margin-bottom: 8px;
 }
+
 .progress-fill {
     height: 100%;
     background-color: var(--primary-color);
     border-radius: 10px;
     transition: width 0.5s ease-in-out;
 }
-.progress-text { text-align: right; font-weight: bold; color: var(--primary-color); font-size: 0.9rem; }
 
-/* Delete Button */
+.progress-text {
+    text-align: right;
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+/* Botón Eliminar Mini */
 .btn-delete-mini {
     position: absolute;
-    top: 15px; right: 15px;
-    background: #fee2e2; color: #ef4444;
-    border: none; border-radius: 50%;
-    width: 35px; height: 35px;
-    display: flex; align-items: center; justify-content: center;
+    top: 15px; 
+    right: 15px;
+    background: #fee2e2; 
+    color: #ef4444;
+    border: none; 
+    border-radius: 50%;
+    width: 35px; 
+    height: 35px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
     cursor: pointer;
     transition: background 0.2s;
 }
-.btn-delete-mini:hover { background: #fecaca; }
 
-/* --- MODALS --- */
+.btn-delete-mini:hover {
+    background: #fecaca;
+}
+
+/* =========================================
+   MODALES (POPUPS)
+========================================= */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -224,6 +391,7 @@ body {
     justify-content: center;
     z-index: 1000;
 }
+
 .modal-content {
     background: white;
     padding: 30px;
@@ -233,21 +401,20 @@ body {
     box-shadow: 0 20px 25px rgba(0,0,0,0.2);
 }
 
-/* --- NUEVO HEADER ESTILO MARIZCAL --- */
-
-/* Contenedor Principal */
+/* =========================================
+   HEADER ESTILO "MARIZCAL"
+========================================= */
 .raffle-header {
     background: white;
     border-radius: 24px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eff6ff; /* Azul muy pálido */
+    border: 1px solid #eff6ff;
     padding: 24px;
     margin-bottom: 30px;
     position: relative;
     overflow: hidden;
 }
 
-/* Layout Flexible */
 .header-content-wrapper {
     position: relative;
     z-index: 1;
@@ -263,7 +430,7 @@ body {
     }
 }
 
-/* --- LOGO MARIZCAL (CSS PURO) --- */
+/* Sección Logo */
 .header-logo-section {
     display: flex;
     justify-content: center;
@@ -286,55 +453,11 @@ body {
     justify-content: center;
 }
 
-.logo-ring-outer {
-    position: absolute; inset: 0;
-    border: 4px solid var(--primary-color);
-    border-radius: 50%;
-    opacity: 0.2;
-    transform: scale(0.9);
+/* Sección Información */
+.header-info-section {
+    flex: 1;
+    width: 100%;
 }
-
-.logo-ring-inner {
-    position: absolute; inset: 0;
-    border: 2px solid var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-}
-
-.logo-text-group { text-align: center; color: var(--primary-color); }
-
-.logo-tagline-top {
-    display: block;
-    font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-}
-
-.logo-brand-name {
-    font-family: 'Times New Roman', serif;
-    font-size: 2rem;
-    font-weight: 900;
-    line-height: 1;
-    margin: 0;
-    transform: rotate(-6deg);
-}
-
-.logo-tagline-bottom {
-    display: block;
-    font-size: 8px;
-    font-weight: bold;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-top: 4px;
-}
-
-/* --- SECCIÓN DERECHA (INFO) --- */
-.header-info-section { flex: 1; width: 100%; }
 
 .header-flex-row {
     display: flex;
@@ -343,13 +466,12 @@ body {
     justify-content: space-between;
 }
 
-/* Textos */
 .badge-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 4px 12px;
-    background-color: #dbeafe; /* Azul claro */
+    background-color: #dbeafe; 
     color: var(--primary-color);
     font-size: 1em;
     font-weight: 600;
@@ -357,8 +479,6 @@ body {
     border-radius: 12px;
     margin-bottom: 12px;
 }
-
-.icon-small { font-size: 16px; }
 
 .header-main-title {
     font-size: 2em;
@@ -368,7 +488,9 @@ body {
     margin: 0 0 12px 0;
 }
 
-.text-brand { color: var(--primary-color); }
+.text-brand {
+    color: var(--primary-color);
+}
 
 .header-subtitle {
     color: #64748b;
@@ -385,7 +507,7 @@ body {
     text-transform: uppercase;
 }
 
-/* --- TARJETAS (PREMIOS Y COSTO) --- */
+/* Tarjetas Informativas en Header */
 .header-cards-group {
     display: flex;
     flex-direction: column;
@@ -393,7 +515,9 @@ body {
 }
 
 @media (min-width: 640px) {
-    .header-cards-group { flex-direction: row; }
+    .header-cards-group {
+        flex-direction: row;
+    }
 }
 
 .info-card {
@@ -402,7 +526,6 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* Tarjeta Premios */
 .prize-card {
     background: linear-gradient(to bottom right, #f8fafc, #ffffff);
     border: 1px solid #e2e8f0;
@@ -422,7 +545,10 @@ body {
     gap: 5px;
 }
 
-.icon-gold { color: #eab308; font-size: 16px; }
+.icon-gold {
+    color: #eab308;
+    font-size: 16px;
+}
 
 .prize-text {
     color: #334155;
@@ -432,7 +558,6 @@ body {
     white-space: pre-line;
 }
 
-/* Tarjeta Costo */
 .cost-card {
     background-color: var(--primary-color);
     color: white;
@@ -444,7 +569,9 @@ body {
     transition: transform 0.2s;
 }
 
-.cost-card:hover { transform: translateY(-4px); }
+.cost-card:hover {
+    transform: translateY(-4px);
+}
 
 .cost-label {
     color: #bfdbfe;
@@ -454,7 +581,9 @@ body {
     text-transform: uppercase;
 }
 
-.cost-amount-wrapper { margin: 5px 0; }
+.cost-amount-wrapper {
+    margin: 5px 0;
+}
 
 .cost-amount {
     font-size: 3em;
@@ -462,4 +591,8 @@ body {
     line-height: 1;
 }
 
-.currency { font-size: 0.8rem; opacity: 0.8; font-weight: 500; }
+.currency {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    font-weight: 500;
+}
