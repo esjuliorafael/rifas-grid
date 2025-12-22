@@ -1,28 +1,42 @@
 /* =========================================
-   VARIABLES & BASE
+   1. RESET GLOBAL
+========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================================
+   2. VARIABLES & BASE
 ========================================= */
 :root {
-    --primary-color: #1e40af;    /* Azul fuerte */
-    --success-color: #22c55e;    /* Verde éxito */
-    --warning-color: #f97316;    /* Naranja alerta */
-    --cancel-color: #ef4444;     /* Rojo cancelar */
-    --bg-color: #f3f4f6;         /* Gris fondo */
-    --card-bg: #ffffff;
-    --text-dark: #1f2937;
+    /* Paleta de Colores */
+    --primary-color: #1e40af;
+    --success-color: #22c55e;
+    --warning-color: #f97316;
+    --cancel-color:  #ef4444;
+
+    /* Fondos y Textos */
+    --bg-color:      #f3f4f6;
+    --card-bg:       #ffffff;
+    --text-dark:     #1f2937;
+
+    /* UI */
     --border-radius: 16px;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-dark);
-    margin: 0;
     padding: 20px;
-    line-height: 1.5;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--bg-color);
 }
 
 /* =========================================
-   UTILITIES
+   3. UTILITIES
 ========================================= */
 .hidden {
     display: none !important;
@@ -49,7 +63,7 @@ body {
 }
 
 /* =========================================
-   CONTAINERS & CARDS
+   4. CONTAINERS & CARDS
 ========================================= */
 .main-container {
     max-width: 1000px;
@@ -58,28 +72,28 @@ body {
 }
 
 .card {
+    margin-bottom: 20px;
+    padding: 30px;
     background: var(--card-bg);
     border-radius: var(--border-radius);
-    padding: 30px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
 }
 
 /* =========================================
-   BUTTONS
+   5. BUTTONS
 ========================================= */
 .btn {
-    padding: 15px 30px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.1s;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    padding: 15px 30px;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.1s;
 }
 
 .btn:active {
@@ -87,38 +101,38 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
     color: white;
+    background-color: var(--primary-color);
 }
 
 .btn-success {
-    background-color: var(--success-color);
     color: white;
+    background-color: var(--success-color);
 }
 
 .btn-warning {
-    background-color: var(--warning-color);
     color: white;
+    background-color: var(--warning-color);
 }
 
 .btn-cancel {
-    background-color: var(--cancel-color);
     color: white;
+    background-color: var(--cancel-color);
 }
 
 .btn-secondary {
-    background-color: #e5e7eb;
     color: #374151;
+    background-color: #e5e7eb;
 }
 
 .btn-large {
-    font-size: 1.5rem;
-    padding: 20px 40px;
     width: 100%;
+    padding: 20px 40px;
+    font-size: 1.5rem;
 }
 
 /* =========================================
-   FORMS
+   6. FORMS
 ========================================= */
 .form-group {
     margin-bottom: 20px;
@@ -126,18 +140,18 @@ body {
 
 .form-label {
     display: block;
+    margin-bottom: 8px;
     font-size: 1.2rem;
     font-weight: bold;
-    margin-bottom: 8px;
 }
 
 .form-input {
     width: 100%;
+    box-sizing: border-box;
     padding: 15px;
-    font-size: 1.2rem;
     border: 2px solid #d1d5db;
+    font-size: 1.2rem;
     border-radius: 10px;
-    box-sizing: border-box; 
 }
 
 .form-input:focus {
@@ -146,7 +160,7 @@ body {
 }
 
 /* =========================================
-   TICKET GRID (VISTA DE GESTIÓN)
+   7. TICKET GRID (VISTA DE GESTIÓN)
 ========================================= */
 .ticket-grid {
     display: grid;
@@ -156,26 +170,24 @@ body {
 }
 
 .ticket-card {
-    background: white;
-    border: 3px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 15px;
-    cursor: pointer;
-    text-align: center;
     position: relative;
-    transition: all 0.2s;
-    height: 140px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding: 1rem;
+    border: 3px solid #e5e7eb;
+    text-align: center;
+    background: white;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .ticket-card:hover {
-    transform: translateY(-5px);
     box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
 }
 
-/* Estados Visuales del Ticket */
 .ticket-card.selected {
     border-color: var(--primary-color);
     background-color: #eff6ff;
@@ -191,33 +203,32 @@ body {
     background-color: #f0fdf4;
 }
 
-/* Elementos internos del Ticket */
 .ticket-number {
+    display: block;
     font-size: 2.5rem;
     font-weight: 900;
     color: #374151;
-    display: block;
 }
 
 .ticket-status-text {
     font-size: 0.8rem;
-    text-transform: uppercase;
     font-weight: bold;
     color: #6b7280;
+    text-transform: uppercase;
 }
 
 .ticket-client {
+    overflow: hidden;
+    white-space: nowrap;
     font-size: 0.9rem;
     font-weight: bold;
     color: var(--primary-color);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     text-transform: uppercase;
+    text-overflow: ellipsis;
 }
 
 /* =========================================
-   STATS BAR (BARRA DE ESTADÍSTICAS)
+   8. STATS BAR & ACTION BAR
 ========================================= */
 .stats-bar {
     display: grid;
@@ -227,12 +238,12 @@ body {
 }
 
 .stat-box {
-    background: white;
     padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     border-left: 5px solid #ccc;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .stat-box.avail {
@@ -248,54 +259,57 @@ body {
 }
 
 .stat-number {
+    display: block;
     font-size: 1.8rem;
     font-weight: bold;
-    display: block;
 }
 
-/* =========================================
-   ACTION BAR (FLOTANTE)
-========================================= */
 .action-bar {
     position: sticky;
     top: 10px;
-    background: #1e3a8a; 
-    color: white;
-    padding: 15px;
-    border-radius: 12px;
+    z-index: 100;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 15px;
-    z-index: 100;
+    padding: 15px;
+    color: white;
+    background: #1e3a8a;
+    border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: slideDown 0.3s ease;
 }
 
 @keyframes slideDown {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* =========================================
-   RAFFLE LIST (VISTA HOME)
+   9. RAFFLE LIST (HOME)
 ========================================= */
 .raffle-list-container {
-    margin-top: 50px;
-    text-align: left;
-    border-top: 1px solid #e5e7eb;
     padding-top: 20px;
+    margin-top: 50px;
+    border-top: 1px solid #e5e7eb;
+    text-align: left;
 }
 
 .section-title {
+    display: block;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e5e7eb;
     font-size: 1.5rem;
     font-weight: bold;
     color: #374151;
-    margin-bottom: 20px;
-    display: block;
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 10px;
 }
 
 #raffles-list {
@@ -306,41 +320,40 @@ body {
 
 .raffle-summary-card {
     position: relative;
-    background: white;
     padding: 25px;
+    border-left: 8px solid var(--primary-color);
+    background: white;
     border-radius: var(--border-radius);
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    border-left: 8px solid var(--primary-color);
     cursor: pointer;
     transition: transform 0.2s;
 }
 
 .raffle-summary-card:hover {
-    transform: translateY(-5px);
     box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
 }
 
 .raffle-summary-title {
+    margin: 0 0 5px 0;
     font-size: 1.4rem;
     font-weight: bold;
     color: #111;
-    margin: 0 0 5px 0;
 }
 
 .raffle-summary-info {
+    margin-bottom: 15px;
     font-size: 1rem;
     color: #6b7280;
-    margin-bottom: 15px;
 }
 
-/* Barra de Progreso */
 .progress-track {
-    width: 100%;
-    background-color: #e5e7eb;
-    height: 12px;
-    border-radius: 10px;
     overflow: hidden;
+    width: 100%;
+    height: 12px;
     margin-bottom: 8px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
 }
 
 .progress-fill {
@@ -351,26 +364,25 @@ body {
 }
 
 .progress-text {
-    text-align: right;
+    font-size: 0.9rem;
     font-weight: bold;
     color: var(--primary-color);
-    font-size: 0.9rem;
+    text-align: right;
 }
 
-/* Botón Eliminar Mini */
 .btn-delete-mini {
     position: absolute;
-    top: 15px; 
+    top: 15px;
     right: 15px;
-    background: #fee2e2; 
-    color: #ef4444;
-    border: none; 
-    border-radius: 50%;
-    width: 35px; 
-    height: 35px;
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
     justify-content: center;
+    width: 35px;
+    height: 35px;
+    border: none;
+    color: #ef4444;
+    background: #fee2e2;
+    border-radius: 50%;
     cursor: pointer;
     transition: background 0.2s;
 }
@@ -380,39 +392,42 @@ body {
 }
 
 /* =========================================
-   MODALES (POPUPS)
+   10. MODALES
 ========================================= */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    top: 0;
+    left: 0;
+    z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
 }
 
 .modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
     width: 90%;
     max-width: 500px;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
     box-shadow: 0 20px 25px rgba(0,0,0,0.2);
 }
 
 /* =========================================
-   HEADER ESTILO "MARIZCAL"
+   11. HEADER ESTILO "MARIZCAL"
 ========================================= */
 .raffle-header {
+    position: relative;
+    padding: 24px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid #eff6ff;
     background: white;
     border-radius: 24px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eff6ff;
-    padding: 24px;
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
 }
 
 .header-content-wrapper {
@@ -430,7 +445,6 @@ body {
     }
 }
 
-/* Sección Logo */
 .header-logo-section {
     display: flex;
     justify-content: center;
@@ -439,21 +453,20 @@ body {
 }
 
 .custom-logo {
+    display: block;
     max-width: 256px;
     object-fit: contain;
-    display: block;
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
 .brand-logo-container {
     position: relative;
-    width: 256px;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 256px;
 }
 
-/* Sección Información */
 .header-info-section {
     flex: 1;
     width: 100%;
@@ -462,30 +475,30 @@ body {
 .header-flex-row {
     display: flex;
     flex-direction: column;
-    gap: 20px;
     justify-content: space-between;
+    gap: 20px;
 }
 
 .badge-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: 12px;
     padding: 4px 12px;
-    background-color: #dbeafe; 
-    color: var(--primary-color);
     font-size: 1em;
     font-weight: 600;
+    color: var(--primary-color);
     text-transform: uppercase;
+    background-color: #dbeafe;
     border-radius: 12px;
-    margin-bottom: 12px;
 }
 
 .header-main-title {
+    margin: 0 0 12px 0;
     font-size: 2em;
     font-weight: 800;
-    color: #0f172a;
     line-height: 1.2;
-    margin: 0 0 12px 0;
+    color: #0f172a;
 }
 
 .text-brand {
@@ -493,21 +506,20 @@ body {
 }
 
 .header-subtitle {
-    color: #64748b;
+    margin: 0;
     font-size: 1.25em;
     font-weight: 600;
-    margin: 0;
+    color: #64748b;
 }
 
 .footer-subtitle {
-    color: var(--primary-color);
+    padding-bottom: 1rem;
     font-size: 1.25em;
     font-weight: 800;
-    padding-bottom: 1rem;
+    color: var(--primary-color);
     text-transform: uppercase;
 }
 
-/* Tarjetas Informativas en Header */
 .header-cards-group {
     display: flex;
     flex-direction: column;
@@ -521,51 +533,51 @@ body {
 }
 
 .info-card {
-    border-radius: 12px;
     padding: 16px;
+    border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .prize-card {
-    background: linear-gradient(to bottom right, #f8fafc, #ffffff);
-    border: 1px solid #e2e8f0;
     flex: 1;
     min-width: 200px;
+    border: 1px solid #e2e8f0;
+    background: linear-gradient(to bottom right, #f8fafc, #ffffff);
 }
 
 .card-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 0 10px 0;
     font-size: 1em;
     font-weight: 600;
     color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin: 0 0 10px 0;
-    display: flex;
-    align-items: center;
-    gap: 5px;
 }
 
 .icon-gold {
-    color: #eab308;
     font-size: 16px;
+    color: #eab308;
 }
 
 .prize-text {
-    color: #334155;
     font-size: 1.25em;
     font-weight: 600;
     line-height: 1.4;
+    color: #334155;
     white-space: pre-line;
 }
 
 .cost-card {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-    min-width: 140px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-width: 140px;
+    text-align: center;
+    color: white;
+    background-color: var(--primary-color);
     transition: transform 0.2s;
 }
 
@@ -574,10 +586,10 @@ body {
 }
 
 .cost-label {
-    color: #bfdbfe;
     display: block;
     font-size: 1em;
     font-weight: 600;
+    color: #bfdbfe;
     text-transform: uppercase;
 }
 
@@ -593,6 +605,387 @@ body {
 
 .currency {
     font-size: 0.8rem;
-    opacity: 0.8;
     font-weight: 500;
+    opacity: 0.8;
+}
+
+/* =========================================
+   12. ESTILOS DE TICKET (WALLET / COMPROBANTE)
+========================================= */
+#ticket-generation-container {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+.ticket-wallet {
+    position: relative;
+    padding: 1.5rem;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f2f2f2;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.ticket-inner-wrapper {
+    width: 336px;
+}
+
+/* Encabezados del Ticket */
+.ticket-header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 160px;
+    padding: 1.5rem;
+    color: white;
+}
+
+.header-pending {
+    padding: 2.5rem 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, #f28c0f 0%, #f2600c 100%);
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+}
+
+.header-confirmed {
+    padding: 2.5rem 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, #056cf2 0%, #0540f2 100%);
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
+}
+
+.ticket-status-row {
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    backdrop-filter: blur(4px);
+}
+
+.status-text {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.label-faint {
+    opacity: 0.6 !important;
+}
+
+.label-strong {
+    font-size: 0.75rem;
+}
+
+.ticket-header-main {
+    margin-top: 1rem;
+}
+
+.header-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.ticket-cost-display {
+    text-align: center;
+    line-height: 1.2;
+}
+
+.amount-large {
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+.label-tiny {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffedd5;
+    opacity: 0.8;
+}
+
+.ticket-header-top {
+    align-items: start;
+    justify-content: space-between;
+}
+
+.icon-check {
+    font-size: 2rem;
+}
+
+/* Divisor con recorte circular */
+.ticket-divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    background-color: white;
+}
+
+.ticket-divider::before,
+.ticket-divider::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    width: 24px;
+    height: 24px;
+    background-color: #f2f2f2;
+    border-radius: 50%;
+}
+
+.ticket-divider::before {
+    left: -12px;
+}
+
+.ticket-divider::after {
+    right: -12px;
+}
+
+.dashed-line {
+    width: 80%;
+    height: 1px;
+    border-top: 2px dashed #e5e7eb;
+}
+
+/* Cuerpo del Ticket */
+.ticket-body {
+    padding: 1.5rem;
+    padding-top: 0.75rem;
+    background-color: white;
+    border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+}
+
+.ticket-customer-section {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.user-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.avatar-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--primary-color);
+    background-color: #eff6ff;
+    border-radius: 50%;
+}
+
+.user-info {
+    flex: 1;
+    min-width: 0;
+    padding-right: 0.75rem;
+}
+
+/* Información Bancaria */
+.bank-card-container {
+    position: relative;
+    margin-top: 0.5rem;
+    padding: 2rem 1rem;
+    border: 1px solid #f3f4f6;
+    background-color: #f9fafb;
+    border-radius: 0.75rem;
+}
+
+.security-warning-box {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fbdfbb;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: center;
+    color: #9b5908;
+    background-color: #fef3e7;
+    border-radius: 0.5rem;
+}
+
+.warning-content-wrapper {
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.icon-alert {
+    font-size: 1.25rem;
+}
+
+.ticket-details-row {
+    justify-content: space-between;
+}
+
+.bank-card-header {
+    align-items: center;
+}
+
+.dot-indicator {
+    width: 8px;
+    height: 8px;
+    background: #2563eb;
+    border-radius: 50%;
+}
+
+.bank-name {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #374151;
+}
+
+.bank-icon {
+    color: #9ca3af;
+}
+
+.bank-number {
+    margin: 0.75rem 0 0.5rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 1.25em;
+    font-weight: 800;
+    color: #1f2937;
+    letter-spacing: 0.05em;
+}
+
+/* Números y Chips */
+.ticket-numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.ticket-chip {
+    padding: 0.25rem 0.5rem;
+    font-family: monospace;
+    font-size: 1.25em;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.chip-gray {
+    border: 1px solid #e5e7eb !important;
+    color: #4b5563 !important;
+    background-color: #f3f4f6 !important;
+}
+
+.chip-blue {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    color: white;
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.chip-orange {
+    border: 1px solid #fbdfbb;
+    color: #9b5908;
+    background-color: #fef3e7;
+}
+
+.opps-box {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid #fbdfbb;
+    background-color: #fef3e7;
+    border-radius: 0.75rem;
+}
+
+.opps-header {
+    color: #9b5908 !important;
+}
+
+.opps-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    gap: 0.5rem;
+    margin-top: 8px;
+}
+
+.opps-chip {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #fbdfbb;
+    font-family: monospace;
+    font-size: 1em;
+    font-weight: 600;
+    color: #9b5908;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.ticket-disclaimer {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #f3f4f6;
+    background-color: #f9fafb;
+    border-radius: 0.75rem;
+}
+
+.disclaimer-text {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+.security-footer {
+    margin-top: 1rem;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.icon-lock {
+    font-size: 1em;
+    color: #64748b;
+}
+
+.security-text {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #64748b;
+}
+
+.highlight-phone {
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.label-sup {
+    display: block;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.data-main {
+    font-size: 1em;
+    font-weight: 800;
+    color: #1f2937;
 }

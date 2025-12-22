@@ -116,6 +116,10 @@
             </div>
 
             <div id="capture-area">
+
+                <div class="text-center header-fraud-notice">
+                    ¡Evita fraudes! Todos los pagos y aclaraciones únicamente al 222 525 1930.
+                </div>
                 
                 <header class="raffle-header">
                     <div class="header-content-wrapper">
@@ -173,7 +177,7 @@
                 <div id="tickets-container" class="ticket-grid"></div>
                 
                 <div class="text-center footer-subtitle">
-                    Lista de participantes actualizada al momento
+                    Lista de participantes actualizada al momento.
                 </div>
             </div>
         </div>
@@ -225,21 +229,166 @@
     </div>
 
     <div id="modal-ticket" class="modal-overlay hidden" style="z-index: 1100;">
-        <div class="modal-content text-center" style="max-width: 500px;">
-            <h3 style="color: var(--success-color);">¡Apartado Listo!</h3>
-            <p style="color: #666; margin-bottom: 10px;">Aquí tienes el comprobante para enviar.</p>
+        <div class="modal-content text-center" style="max-width: 450px; background: transparent; box-shadow: none; padding: 0;">
             
-            <div style="border: 4px solid #eee; padding: 5px; margin: 15px 0; background: #fafafa; border-radius: 12px;">
-                <canvas id="ticket-canvas" style="max-width: 100%; height: auto; border-radius: 8px;"></canvas>
-            </div>
+            <div id="generated-ticket-img-container" style="margin-bottom: 20px;"></div>
 
-            <div class="flex flex-col gap-small">
-                <button onclick="downloadCanvas()" class="btn btn-warning btn-large">
+            <div class="flex flex-col gap-small" style="background: white; padding: 20px; border-radius: 16px;">
+                <h3 style="margin: 0 0 10px 0; color: var(--primary-color);">¡Ticket Listo!</h3>
+                <button onclick="downloadGeneratedTicket()" class="btn btn-warning btn-large">
                     <span class="material-symbols-outlined">download</span> Descargar Imagen
                 </button>
-                <button onclick="closeModal('modal-ticket')" class="btn btn-secondary" style="width: 100%;">Cerrar Ventana</button>
+                <button onclick="closeModal('modal-ticket')" class="btn btn-secondary" style="width: 100%;">Cerrar</button>
             </div>
         </div>
+    </div>
+
+    <div id="ticket-generation-container">
+        
+        <div id="template-pending" class="ticket-wallet">
+            <div class="ticket-inner-wrapper">
+                
+                <div class="header-pending">
+                    <div class="flex ticket-status-row">
+                        <div class="status-badge">
+                            <span class="status-text">PENDIENTE DE PAGO</span>
+                        </div>
+                    </div>
+                    <div class="ticket-cost-display">
+                        <p class="label-tiny">TOTAL A PAGAR</p>
+                        <h2 class="amount-large" id="tpl-pen-cost">$0.00</h2>
+                        <p class="label-tiny">Apartado con vigencia de 3 días</p>
+                    </div>
+                </div>
+
+                <div class="ticket-divider">
+                    <div class="dashed-line"></div>
+                </div>
+
+                <div class="ticket-body">
+                    
+                    <div class="ticket-customer-section">
+                        <p class="label-sup">APARTADO A NOMBRE DE</p>
+                        <h3 class="data-main" id="tpl-pen-name">Cliente</h3>
+                    </div>
+
+                    <div class="flex ticket-details-row">
+                        <div>
+                            <p class="label-sup">TUS BOLETOS</p>
+                            <div class="ticket-numbers-grid" id="tpl-pen-tickets">
+                                <span class="ticket-chip chip-gray">05</span>
+                                <span class="ticket-chip chip-gray">12</span>
+                                <span class="ticket-chip chip-gray">33</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="label-sup">FECHA</p>
+                            <p class="data-main" id="tpl-pen-date">--/--</p>
+                        </div>
+                    </div>
+
+                    <div class="bank-card-container">
+                        <div class="flex ticket-details-row">
+                            <div class="flex gap-small bank-card-header">
+                                <div class="dot-indicator"></div>
+                                <span class="bank-name">BBVA / DEPÓSITOS Y TRANSF.</span>
+                            </div>
+                            <span class="material-symbols-outlined bank-icon">credit_card</span>
+                        </div>
+                        <p class="bank-number">4152 3140 0558 8036</p>
+                        <p class="label-sup">RAFAEL ESCAMILLA</p>
+                    </div>
+
+                    <div class="security-warning-box">
+                        <div class="flex warning-content-wrapper">
+                            <span class="material-symbols-outlined icon-alert">gpp_maybe</span>
+                            <p><strong>¡NO TE DEJES ENGAÑAR!</strong><br>El único número autorizado para confirmar tus pagos es el 222 525 1930.</p>
+                        </div>
+                    </div>
+
+                </div>
+            
+            </div>
+        </div>
+
+        <div id="template-confirmed" class="ticket-wallet">
+            <div class="ticket-inner-wrapper">
+                
+                <div class="header-confirmed">
+                    <div class="flex ticket-header-top">
+                        <span class="material-symbols-outlined icon-check">check_circle</span>
+                        <div class="text-center">
+                            <p class="status-text label-faint">ESTADO</p>
+                            <p class="status-text label-strong">PAGADO</p>
+                        </div>
+                    </div>
+                    <div class="ticket-header-main">
+                        <h2 class="header-title">Pago Recibido</h2>
+                        <p class="label-tiny">Participación activada</p>
+                    </div>
+                </div>
+
+                <div class="ticket-divider">
+                    <div class="dashed-line"></div>
+                </div>
+
+                <div class="ticket-body">
+                    
+                    <div class="user-row">
+                        <div class="avatar-circle" id="tpl-conf-avatar">C</div>
+                        <div class="user-info">
+                            <p class="label-sup">PARTICIPANTE</p>
+                            <p class="data-main" id="tpl-conf-name">Cliente</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="label-sup">MONTO</p>
+                            <p class="data-main" id="tpl-conf-amount">$160</p>
+                        </div>
+                    </div>
+
+                    <div class="flex ticket-details-row">
+                        <div>
+                            <p class="label-sup">BOLETOS ASIGNADOS</p>
+                            <div class="ticket-numbers-grid" id="tpl-conf-tickets">
+                                <span class="ticket-chip chip-gray">05</span>
+                                <span class="ticket-chip chip-gray">12</span>
+                                <span class="ticket-chip chip-gray">33</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="label-sup">FECHA</p>
+                            <p class="data-main" id="tpl-conf-date">--/--</p>
+                        </div>
+                    </div>
+
+                    <div class="opps-box">
+                        <p class="label-sup opps-header">OPORTUNIDADES EXTRA</p>
+                        <div class="opps-grid" id="tpl-conf-opps">
+                            <span class="opps-chip">34</span>
+                            <span class="opps-chip">35</span>
+                            <span class="opps-chip">88</span>
+                            <span class="opps-chip">99</span>
+                            <span class="opps-chip">00</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-disclaimer">
+                        <p class="disclaimer-text">Este comprobante certifica que el participante ha realizado correctamente el pago correspondiente a sus boletos.</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="security-footer">
+                <span class="material-symbols-outlined icon-lock">lock</span>
+                <p class="security-text">
+                    Cualquier aclaración sobre este recibo<br>
+                    solo será válida al WhatsApp <span class="highlight-phone">222 525 1930</span>.
+                </p>
+            </div>
+        </div>
+
     </div>
 
     <script src="script.js"></script>

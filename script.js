@@ -5,6 +5,7 @@ let allRaffles = [];
 let currentRaffleIndex = null;
 let currentRaffle = null;
 let selectedIndices = new Set();
+let currentGeneratedImage = null; // Variable global para la imagen del ticket
 
 /* -------------------------------------------------------------------------- */
 /* INICIALIZACIÓN                               */
@@ -16,10 +17,12 @@ document.addEventListener('DOMContentLoaded', loadFromServer);
 /* -------------------------------------------------------------------------- */
 function showView(viewName) {
     ['home', 'create', 'manage'].forEach(v => {
-        document.getElementById('view-' + v).classList.add('hidden');
+        const el = document.getElementById('view-' + v);
+        if(el) el.classList.add('hidden');
     });
     
-    document.getElementById('view-' + viewName).classList.remove('hidden');
+    const target = document.getElementById('view-' + viewName);
+    if(target) target.classList.remove('hidden');
     
     // Al volver al home, refrescar la lista
     if (viewName === 'home') {
@@ -74,10 +77,12 @@ async function loadFromServer() {
 function renderHomeList() {
     const listDiv = document.getElementById('raffles-list');
     const container = document.getElementById('existing-raffles-container');
+    
+    if (!listDiv) return;
     listDiv.innerHTML = '';
 
     if (allRaffles.length > 0) {
-        container.classList.remove('hidden');
+        if(container) container.classList.remove('hidden');
         
         allRaffles.forEach((raffle, index) => {
             const total = raffle.tickets.length;
@@ -102,7 +107,7 @@ function renderHomeList() {
             listDiv.appendChild(card);
         });
     } else {
-        container.classList.add('hidden');
+        if(container) container.classList.add('hidden');
     }
 }
 
@@ -214,14 +219,12 @@ function saveEditRaffle() {
 /* RENDER GRID (GESTIÓN)                       */
 /* -------------------------------------------------------------------------- */
 function renderGrid() {
-    document.getElementById('m-title').innerText = currentRaffle.title;
-    
-    const prizeEl = document.getElementById('m-prizes');
-    if (prizeEl) prizeEl.innerText = currentRaffle.prizes;
-
-    document.getElementById('m-cost-display').innerText = '$' + currentRaffle.cost;
+    safeSetText('m-title', currentRaffle.title);
+    safeSetText('m-prizes', currentRaffle.prizes);
+    safeSetText('m-cost-display', '$' + currentRaffle.cost);
     
     const container = document.getElementById('tickets-container');
+    if(!container) return;
     container.innerHTML = '';
 
     currentRaffle.tickets.forEach((t, index) => {
@@ -277,10 +280,12 @@ function clearSelection() {
 
 function updateActionBar() {
     const bar = document.getElementById('action-bar');
+    if (!bar) return;
+
     if (selectedIndices.size > 0) {
         bar.classList.remove('hidden'); 
         bar.classList.add('flex');
-        document.getElementById('selected-count').innerText = selectedIndices.size;
+        safeSetText('selected-count', selectedIndices.size);
     } else {
         bar.classList.add('hidden'); 
         bar.classList.remove('flex');
@@ -291,14 +296,15 @@ function openReserveModal() {
     if (selectedIndices.size === 0) return alert("Selecciona boletos");
     
     const nums = Array.from(selectedIndices).map(i => currentRaffle.tickets[i].number).join(', ');
-    document.getElementById('modal-ticket-ids').innerText = nums;
+    safeSetText('modal-ticket-ids', nums);
     document.getElementById('input-name').value = '';
     document.getElementById('input-phone').value = '';
     document.getElementById('modal-reserve').classList.remove('hidden');
 }
 
 function closeModal(id) { 
-    document.getElementById(id).classList.add('hidden'); 
+    const el = document.getElementById(id);
+    if(el) el.classList.add('hidden'); 
 }
 
 function confirmReserve() {
@@ -325,17 +331,69 @@ function confirmReserve() {
     renderGrid();
     saveToServer();
 
-    drawTicket({ 
+    // Generar Ticket Naranja (Pendiente)
+    generateTicketImage({ 
         numbers: reservedData.numbers.join(', '), 
         client: name, 
-        extras: reservedData.extras.join(' - '), 
+        extras: reservedData.extras, 
         total: reservedData.total 
-    });
-    
-    document.getElementById('modal-ticket').classList.remove('hidden');
+    }, 'pending');
 }
 
 function bulkUpdateStatus(status) {
+    if (selectedIndices.size === 0) return;
+
+    // Lógica especial para cuando se paga: GENERAR TICKET
+    if (status === 'paid') {
+        // Recolectar datos ANTES de limpiar la selección
+        let ticketData = { numbers: [], extras: [], total: 0, client: '' };
+        let missingClient = false;
+
+        selectedIndices.forEach(index => {
+            const t = currentRaffle.tickets[index];
+            
+            // Si no tiene nombre (ej. venta directa), pediremos uno o usamos genérico
+            if (!t.client) missingClient = true;
+            else if (!ticketData.client) ticketData.client = t.client;
+
+            ticketData.numbers.push(t.number);
+            ticketData.extras.push(...t.extras);
+            ticketData.total += currentRaffle.cost;
+        });
+
+        // Si no hay cliente asignado (venta directa), pedir nombre rápido
+        if (!ticketData.client) {
+            const promptName = prompt("Estás marcando como pagado pero no hay nombre. Ingresa el cliente para el ticket:", "Cliente Mostrador");
+            if (promptName) ticketData.client = promptName;
+            else return; // Cancelar si no pone nombre
+        }
+
+        // Aplicar cambios
+        selectedIndices.forEach(index => {
+            currentRaffle.tickets[index].status = 'paid';
+            currentRaffle.tickets[index].client = ticketData.client; // Asegurar que tenga nombre
+        });
+
+        if (confirm(`¿Marcar ${selectedIndices.size} boletos como PAGADOS y generar ticket?`)) {
+            clearSelection();
+            updateStats();
+            renderGrid();
+            saveToServer();
+
+            // Generar Ticket Azul (Pagado)
+            generateTicketImage({
+                numbers: ticketData.numbers.join(', '),
+                client: ticketData.client,
+                extras: ticketData.extras,
+                total: ticketData.total
+            }, 'paid');
+            return;
+        } else {
+            return; // Cancelado por usuario
+        }
+    }
+
+    // Lógica normal para otros estados (Available / Liberar)
     if (!confirm('¿Confirmar cambio de estado?')) return;
     
     selectedIndices.forEach(index => {
@@ -356,176 +414,141 @@ function updateStats() {
     const counts = { available: 0, reserved: 0, paid: 0 };
     currentRaffle.tickets.forEach(t => counts[t.status]++);
     
-    document.getElementById('stat-avail').innerText = counts.available;
-    document.getElementById('stat-reserved').innerText = counts.reserved;
-    document.getElementById('stat-paid').innerText = counts.paid;
+    safeSetText('stat-avail', counts.available);
+    safeSetText('stat-reserved', counts.reserved);
+    safeSetText('stat-paid', counts.paid);
 }
 
 /* -------------------------------------------------------------------------- */
-/* GENERACIÓN DE TICKET (CANVAS)               */
+/* GENERACIÓN DE TICKET (NUEVO SISTEMA HTML2CANVAS CORREGIDO)                 */
 /* -------------------------------------------------------------------------- */
-function drawTicket(data) {
-    const canvas = document.getElementById('ticket-canvas');
-    const ctx = canvas.getContext('2d');
+
+async function generateTicketImage(data, type = 'pending') {
+    // 1. Mostrar modal con mensaje de carga
+    const imgContainer = document.getElementById('generated-ticket-img-container');
+    if (imgContainer) imgContainer.innerHTML = '<div style="padding:40px;">Generando ticket, espera...</div>';
     
-    // 1. Configuración de Alta Resolución
-    canvas.width = 500; 
-    canvas.height = 850;
+    const modal = document.getElementById('modal-ticket');
+    if (modal) modal.classList.remove('hidden');
     
-    // Colores
-    const colorFondo = "#e5e5e5";    
-    const colorRojo = "#991b1b";     
-    const colorBlanco = "#ffffff";
-    const colorTextoOscuro = "#1f2937";
-    const colorTextoGris = "#6b7280";
-
-    // 2. Fondo General
-    ctx.fillStyle = colorFondo;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // --- ENCABEZADO SUPERIOR ---
-    ctx.fillStyle = colorRojo; 
-    ctx.font = "bold 30px 'Segoe UI', Arial, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("RIFAS MARIZCAL", canvas.width / 2, 60);
-
-    // --- TARJETA ROJA ---
-    drawRoundedRect(ctx, 40, 90, 420, 220, 30);
-    ctx.fillStyle = colorRojo;
-    ctx.fill();
-
-    // Icono
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, 150, 25, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(255,255,255,0.2)"; 
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(238, 150); ctx.lineTo(248, 160); ctx.lineTo(265, 138);
-    ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.stroke();
-
-    // Texto de Estado
-    ctx.fillStyle = "white";
-    ctx.font = "bold 24px Arial";
-    ctx.fillText("BOLETO APARTADO", canvas.width / 2, 200);
-
-    // Etiqueta MONTO
-    ctx.font = "14px Arial";
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
-    ctx.fillText("MONTO", canvas.width / 2, 235);
-
-    // Cantidad
-    ctx.font = "bold 60px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText(`$${data.total}.00`, canvas.width / 2, 290);
-
-    // --- TARJETA BLANCA ---
-    drawRoundedRect(ctx, 40, 330, 420, 450, 30);
-    ctx.fillStyle = colorBlanco;
-    ctx.fill();
-
-    // --- EFECTO DE RECORTE ---
-    const cutY = 650;
-    ctx.globalCompositeOperation = 'destination-out';
+    // 2. Seleccionar Plantilla
+    const templateId = type === 'paid' ? 'template-confirmed' : 'template-pending';
+    const template = document.getElementById(templateId);
     
-    ctx.beginPath(); ctx.arc(40, cutY, 15, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(460, cutY, 15, 0, Math.PI * 2); ctx.fill();
+    if (!template) {
+        alert("Error: No se encontró la plantilla del ticket en el HTML.");
+        return;
+    }
 
-    ctx.globalCompositeOperation = 'source-over';
+    // 3. Inyectar Datos según el tipo
+    const dateStr = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit' });
 
-    // Línea punteada
-    ctx.beginPath();
-    ctx.setLineDash([10, 10]);
-    ctx.moveTo(60, cutY);
-    ctx.lineTo(440, cutY);
-    ctx.strokeStyle = "#d1d5db";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.setLineDash([]);
+    if (type === 'pending') {
+        safeSetText('tpl-pen-cost', `$${data.total}.00`);
+        safeSetText('tpl-pen-name', data.client || "Cliente");
+        safeSetText('tpl-pen-date', dateStr);
+        
+        // Boletos (Chips Grises)
+        const ticketsDiv = document.getElementById('tpl-pen-tickets');
+        if (ticketsDiv) {
+            ticketsDiv.innerHTML = '';
+            // Convertir a array si viene como string
+            const numList = typeof data.numbers === 'string' ? data.numbers.split(', ') : data.numbers;
+            numList.forEach(num => {
+                const span = document.createElement('span');
+                span.className = 'ticket-chip chip-gray';
+                span.innerText = num;
+                ticketsDiv.appendChild(span);
+            });
+        }
 
-    // --- DATOS DEL TICKET ---
-    ctx.textAlign = "left";
-    let leftMargin = 80;
+    } else {
+        // Confirmed (Pagado)
+        const clientName = data.client || "Cliente";
+        const initials = clientName.substring(0, 2).toUpperCase();
+        
+        safeSetText('tpl-conf-avatar', initials);
+        safeSetText('tpl-conf-name', clientName);
+        safeSetText('tpl-conf-amount', `$${data.total}.00`);
+        
+        // CORRECCIÓN: Usamos tpl-conf-date. Si no existe en HTML, no pasa nada.
+        safeSetText('tpl-conf-date', dateStr); 
 
-    // 1. Título
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "bold 12px Arial";
-    ctx.fillText("RIFA NO. / TÍTULO", leftMargin, 380);
+        // Boletos (Chips Azules)
+        const ticketsDiv = document.getElementById('tpl-conf-tickets');
+        if (ticketsDiv) {
+            ticketsDiv.innerHTML = '';
+            const numList = typeof data.numbers === 'string' ? data.numbers.split(', ') : data.numbers;
+            numList.forEach(num => {
+                const div = document.createElement('div');
+                div.className = 'ticket-chip chip-blue';
+                div.innerText = num;
+                ticketsDiv.appendChild(div);
+            });
+        }
 
-    ctx.fillStyle = colorTextoOscuro;
-    ctx.font = "bold 20px Arial";
-    let titleText = currentRaffle.title.substring(0, 28); 
-    if (currentRaffle.title.length > 28) titleText += "...";
-    ctx.fillText(titleText.toUpperCase(), leftMargin, 410);
-    
-    ctx.font = "16px Arial";
-    ctx.fillStyle = colorTextoOscuro;
-    ctx.fillText(`BOLETO $${currentRaffle.cost} PESOS`, leftMargin, 435);
+        // Oportunidades
+        const oppsDiv = document.getElementById('tpl-conf-opps');
+        if (oppsDiv) {
+            oppsDiv.innerHTML = '';
+            if(data.extras) {
+                 const extrasArr = Array.isArray(data.extras) ? data.extras : (typeof data.extras === 'string' ? data.extras.split(' - ') : []);
+                 extrasArr.forEach(op => {
+                    const span = document.createElement('span');
+                    span.className = 'opps-chip';
+                    span.innerText = op;
+                    oppsDiv.appendChild(span);
+                 });
+            }
+        }
+    }
 
-    ctx.fillStyle = "#f3f4f6";
-    ctx.fillRect(leftMargin, 455, 340, 2);
+    // 4. Pequeña pausa para asegurar renderizado del DOM antes de capturar
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    // 2. Participante
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "bold 12px Arial";
-    ctx.fillText("PARTICIPANTE", leftMargin, 490);
+    // 5. Generar Imagen con html2canvas
+    try {
+        const canvas = await html2canvas(template, {
+            scale: 2, 
+            backgroundColor: null, 
+            logging: false,
+            useCORS: true 
+        });
 
-    ctx.fillStyle = colorTextoOscuro;
-    ctx.font = "bold 24px Arial";
-    ctx.fillText(data.client.toUpperCase(), leftMargin, 525);
+        currentGeneratedImage = canvas.toDataURL("image/png");
+        
+        // 6. Mostrar imagen final
+        const img = new Image();
+        img.src = currentGeneratedImage;
+        img.style.width = "100%";
+        img.style.maxWidth = "340px"; // Ancho real del ticket
+        img.style.borderRadius = "12px";
+        img.style.boxShadow = "0 10px 15px -3px rgba(0, 0, 0, 0.1)";
+        
+        if(imgContainer) {
+            imgContainer.innerHTML = '';
+            imgContainer.appendChild(img);
+        }
 
-    ctx.fillStyle = "#f3f4f6";
-    ctx.fillRect(leftMargin, 545, 340, 2);
-
-    // 3. Boletos
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "bold 12px Arial";
-    ctx.fillText("BOLETOS", leftMargin, 580);
-
-    ctx.fillStyle = colorTextoOscuro;
-    ctx.font = "bold 36px Arial";
-    ctx.fillText(data.numbers, leftMargin, 625);
-
-    // 4. Oportunidades
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "bold 12px Arial";
-    ctx.fillText("OPORTUNIDADES", leftMargin, 690);
-
-    ctx.fillStyle = "#4b5563";
-    ctx.font = "20px monospace";
-    let ops = data.extras;
-    if (ops.length > 25) ops = ops.substring(0, 25) + "...";
-    ctx.fillText(ops, leftMargin, 720);
-
-    // --- PIE DE PÁGINA ---
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#9ca3af";
-    ctx.font = "bold 14px Arial";
-    ctx.fillText("GRACIAS POR SU APOYO", canvas.width / 2, 810);
+    } catch (err) {
+        console.error("Error generando ticket:", err);
+        if(imgContainer) imgContainer.innerHTML = '<p style="color:red">Error al generar la imagen. Verifica la consola.</p>';
+    }
 }
 
-function drawRoundedRect(ctx, x, y, width, height, radius) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
-}
-
-function downloadCanvas() {
+function downloadGeneratedTicket() {
+    if (!currentGeneratedImage) return;
     const link = document.createElement('a');
-    link.download = `Ticket-Rifa.png`;
-    link.href = document.getElementById('ticket-canvas').toDataURL();
+    link.download = `Ticket-${new Date().getTime()}.png`;
+    link.href = currentGeneratedImage;
     link.click();
 }
 
 function exportReportImage() {
-    html2canvas(document.getElementById('capture-area'), {
+    const area = document.getElementById('capture-area');
+    if(!area) return;
+
+    html2canvas(area, {
         scale: 2
     }).then(canvas => {
         const link = document.createElement('a');
@@ -533,4 +556,11 @@ function exportReportImage() {
         link.href = canvas.toDataURL();
         link.click();
     });
+}
+
+// FUNCION HELPER DE SEGURIDAD
+// Esto evita que el código se rompa si borras un ID en el HTML
+function safeSetText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.innerText = text;
 }
