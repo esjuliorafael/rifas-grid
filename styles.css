@@ -27,7 +27,7 @@
 }
 
 body {
-    padding: 20px;
+    padding: 1.25rem;
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -66,17 +66,8 @@ body {
    4. CONTAINERS & CARDS
 ========================================= */
 .main-container {
-    max-width: 1000px;
+    max-width: 1024px;
     margin: 0 auto;
-    padding-bottom: 80px;
-}
-
-.card {
-    margin-bottom: 20px;
-    padding: 30px;
-    background: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 /* =========================================
@@ -233,8 +224,8 @@ body {
 .stats-bar {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .stat-box {
