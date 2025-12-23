@@ -481,7 +481,7 @@ async function generateTicketImage(data, type = 'pending') {
             const numList = typeof data.numbers === 'string' ? data.numbers.split(', ') : data.numbers;
             numList.forEach(num => {
                 const div = document.createElement('div');
-                div.className = 'ticket-chip chip-blue';
+                div.className = 'ticket-chip chip-gray';
                 div.innerText = num;
                 ticketsDiv.appendChild(div);
             });

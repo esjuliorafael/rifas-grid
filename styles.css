@@ -512,6 +512,14 @@ body {
     color: #64748b;
 }
 
+.header-fraud-notice {
+    padding-bottom: 1rem;
+    font-size: 1.25em;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-transform: uppercase;
+}
+
 .footer-subtitle {
     padding-bottom: 1rem;
     font-size: 1.25em;
@@ -632,31 +640,20 @@ body {
     width: 336px;
 }
 
-/* Encabezados del Ticket */
-.ticket-header {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 160px;
-    padding: 1.5rem;
-    color: white;
-}
-
 .header-pending {
     padding: 2.5rem 1.5rem;
-    color: white;
-    background: linear-gradient(135deg, #f28c0f 0%, #f2600c 100%);
     border-top-left-radius: 1.5rem;
     border-top-right-radius: 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, #f28c0f 0%, #f2600c 100%);
 }
 
 .header-confirmed {
     padding: 2.5rem 1.5rem;
-    color: white;
-    background: linear-gradient(135deg, #056cf2 0%, #0540f2 100%);
     border-top-left-radius: 1.5rem;
     border-top-right-radius: 1.5rem;
+    color: white;
+    background: linear-gradient(135deg, #056cf2 0%, #0540f2 100%);
 }
 
 .ticket-status-row {
@@ -885,21 +882,9 @@ body {
 }
 
 .chip-gray {
-    border: 1px solid #e5e7eb !important;
-    color: #4b5563 !important;
-    background-color: #f3f4f6 !important;
-}
-
-.chip-blue {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
-    color: white;
-    background-color: var(--primary-color);
-    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+    background-color: #f3f4f6;
 }
 
 .chip-orange {
@@ -988,12 +973,4 @@ body {
     font-size: 1em;
     font-weight: 800;
     color: #1f2937;
-}
-
-.header-fraud-notice {
-    color: var(--primary-color);
-    font-size: 1.25em;
-    font-weight: 800;
-    padding-bottom: 1rem;
-    text-transform: uppercase;
 }
