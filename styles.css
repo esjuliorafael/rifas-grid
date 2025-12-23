@@ -676,7 +676,7 @@ body {
 
 .status-text {
     font-size: 0.75rem;
-    font-weight: 800;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -789,10 +789,10 @@ body {
     justify-content: center;
     width: 40px;
     height: 40px;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 1em;
+    font-weight: 600;
     color: var(--primary-color);
-    background-color: #eff6ff;
+    background-color: #e6f1fe;
     border-radius: 50%;
 }
 
@@ -881,7 +881,7 @@ body {
     font-family: monospace;
     font-size: 1.25em;
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 0.5rem;
 }
 
 .chip-gray {
@@ -936,7 +936,7 @@ body {
     font-weight: 600;
     color: #9b5908;
     background-color: white;
-    border-radius: 4px;
+    border-radius: 0.5rem;
 }
 
 .ticket-disclaimer {
@@ -988,4 +988,12 @@ body {
     font-size: 1em;
     font-weight: 800;
     color: #1f2937;
+}
+
+.header-fraud-notice {
+    color: var(--primary-color);
+    font-size: 1.25em;
+    font-weight: 800;
+    padding-bottom: 1rem;
+    text-transform: uppercase;
 }
