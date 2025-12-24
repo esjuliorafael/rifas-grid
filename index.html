@@ -50,6 +50,29 @@
                         <textarea id="r-prizes" class="form-input" rows="3" required placeholder="Ej. 1er Lugar: TV..."></textarea>
                     </div>
 
+                    <div class="form-group card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <h4 style="margin-top:0; color:#475569;">Personalización Visual</h4>
+                        <div class="flex gap-medium" style="flex-wrap: wrap;">
+                            
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label class="form-label">Color del Tema (Hex)</label>
+                                <div class="flex" style="align-items: center; gap: 10px;">
+                                    <input type="color" id="r-color-picker" value="#2563eb" style="width: 50px; height: 42px; border: none; cursor: pointer; padding: 0; background: none;">
+                                    
+                                    <input type="text" id="r-color" class="form-input" value="#2563eb" placeholder="#000000" maxlength="7" style="font-family: monospace; letter-spacing: 1px; text-transform: uppercase;">
+                                </div>
+                                <small style="color: #94a3b8; font-size: 0.8rem;">Pega aquí tu código o usa el cuadro.</small>
+                            </div>
+
+                            <div class="form-group" style="flex: 2; min-width: 200px;">
+                                <label class="form-label">Logo (Nombre de archivo)</label>
+                                <input type="text" id="r-logo" class="form-input" placeholder="Ej. logo-navidad.png">
+                                <small style="color: #94a3b8;">Debe estar en la misma carpeta que el index.html</small>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <div class="flex gap-medium" style="flex-wrap: wrap;">
                         <div class="form-group" style="flex: 1;">
                             <label class="form-label">Costo por Boleto ($)</label>
@@ -134,7 +157,7 @@
                                 <div>
                                     <div class="badge-pill">Sorteo Especial</div>
                                     <h2 class="header-main-title">
-                                        ¡Gran Rifa! <span id="m-title" class="text-brand">Cargando...</span>
+                                        ¡Gran rifa! <span id="m-title" class="text-brand">Cargando...</span>
                                     </h2>
                                     <p class="header-subtitle">
                                         Tu oportunidad de ganar comienza con Rifas Marizcal.
@@ -203,10 +226,73 @@
         </div>
     </div>
 
+    <div id="modal-cascade" class="modal-overlay hidden" style="z-index: 1050;">
+        <div class="modal-content">
+            <div class="text-center" style="margin-bottom: 20px;">
+                <span class="material-symbols-outlined" style="font-size: 50px; color: var(--primary-color);">group_add</span>
+                <h3 style="color: var(--text-dark); margin-top: 10px;">Boletos Relacionados</h3>
+            </div>
+            
+            <p id="cascade-text" style="font-size: 1.1rem; text-align: center; margin-bottom: 15px;">
+                </p>
+
+            <div id="cascade-tickets-list" class="flex" style="justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; max-height: 150px; overflow-y: auto;">
+                </div>
+
+            <div class="card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 25px; border-radius: 12px; text-align: center;">
+                <p style="font-size: 0.95rem; color: #64748b; margin: 0;">
+                    ¿Deseas aplicar la acción a <b>TODOS</b> ellos o solo a los que seleccionaste manualmente?
+                </p>
+            </div>
+            
+            <div class="flex flex-col gap-small">
+                <button onclick="applyCascade(true)" class="btn btn-primary btn-large" style="font-size: 1rem;">
+                    Sí, incluir a todos
+                </button>
+                <button onclick="applyCascade(false)" class="btn btn-secondary" style="font-size: 1rem;">
+                    No, solo mi selección
+                </button>
+                <button onclick="closeModal('modal-cascade')" class="btn btn-cancel" style="margin-top: 10px; font-size: 0.9rem; padding: 10px;">
+                    Cancelar operación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirm-pay" class="modal-overlay hidden" style="z-index: 1060;">
+        <div class="modal-content text-center">
+            <div style="margin-bottom: 15px;">
+                <span class="material-symbols-outlined" style="font-size: 48px; color: var(--success-color);">payments</span>
+            </div>
+            <h3 style="color: var(--text-dark); margin-bottom: 10px;">Confirmar Cobro</h3>
+            
+            <div class="card" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; margin-bottom: 20px; border-radius: 12px;">
+                <p style="margin: 0; font-size: 0.9rem; color: #166534;">Total a Recibir</p>
+                <h2 style="margin: 5px 0; font-size: 2.5rem; color: var(--success-color);" id="conf-total">$0</h2>
+                <p style="margin: 0; font-size: 1rem; color: #166534;">
+                    Por <span id="conf-count" style="font-weight: bold;">0</span> boletos
+                </p>
+            </div>
+
+            <p style="margin-bottom: 20px; color: #64748b;">
+                Cliente: <strong id="conf-client" style="color: var(--primary-color);">---</strong>
+            </p>
+
+            <div class="flex flex-col gap-small">
+                <button onclick="finishPaymentAction()" class="btn btn-success btn-large">
+                    <span class="material-symbols-outlined">check_circle</span> Confirmar y Generar Ticket
+                </button>
+                <button onclick="closeModal('modal-confirm-pay')" class="btn btn-secondary">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-edit" class="modal-overlay hidden">
         <div class="modal-content">
             <h3>Editar Datos de la Rifa</h3>
-            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">Puedes corregir el nombre, los premios o el costo. Los boletos no se borrarán.</p>
+            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">Puedes corregir los datos visuales o de negocio.</p>
             
             <div class="form-group">
                 <label class="form-label">Título</label>
@@ -216,9 +302,25 @@
                 <label class="form-label">Premios</label>
                 <textarea id="edit-prizes" class="form-input" rows="3"></textarea>
             </div>
+            
+            <div class="flex gap-medium">
+                <div class="form-group" style="flex:1;">
+                    <label class="form-label">Costo ($)</label>
+                    <input type="number" id="edit-cost" class="form-input">
+                </div>
+                
+                <div class="form-group" style="flex:1;">
+                    <label class="form-label">Color del Tema (Hex)</label>
+                    <div class="flex" style="align-items: center; gap: 8px;">
+                        <input type="color" id="edit-color-picker" style="width: 40px; height: 42px; border:none; background:transparent; cursor: pointer;">
+                        <input type="text" id="edit-color" class="form-input" style="font-family: monospace; text-transform: uppercase;">
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
-                <label class="form-label">Costo por Boleto ($)</label>
-                <input type="number" id="edit-cost" class="form-input">
+                <label class="form-label">Logo (Nombre de archivo)</label>
+                <input type="text" id="edit-logo" class="form-input">
             </div>
 
             <div class="flex gap-medium">
@@ -244,15 +346,11 @@
     </div>
 
     <div id="ticket-generation-container">
-        
         <div id="template-pending" class="ticket-wallet">
             <div class="ticket-inner-wrapper">
-                
                 <div class="header-pending">
                     <div class="flex ticket-status-row">
-                        <div class="status-badge">
-                            <span class="status-text">PENDIENTE DE PAGO</span>
-                        </div>
+                        <div class="status-badge"><span class="status-text">PENDIENTE DE PAGO</span></div>
                     </div>
                     <div class="ticket-cost-display">
                         <p class="label-tiny">TOTAL A PAGAR</p>
@@ -260,33 +358,22 @@
                         <p class="label-tiny">Apartado con vigencia de 3 días</p>
                     </div>
                 </div>
-
-                <div class="ticket-divider">
-                    <div class="dashed-line"></div>
-                </div>
-
+                <div class="ticket-divider"><div class="dashed-line"></div></div>
                 <div class="ticket-body">
-                    
                     <div class="ticket-customer-section">
                         <p class="label-sup">APARTADO A NOMBRE DE</p>
                         <h3 class="data-main" id="tpl-pen-name">Cliente</h3>
                     </div>
-
                     <div class="flex ticket-details-row">
                         <div>
                             <p class="label-sup">TUS BOLETOS</p>
-                            <div class="ticket-numbers-grid" id="tpl-pen-tickets">
-                                <span class="ticket-chip chip-gray">05</span>
-                                <span class="ticket-chip chip-gray">12</span>
-                                <span class="ticket-chip chip-gray">33</span>
-                            </div>
+                            <div class="ticket-numbers-grid" id="tpl-pen-tickets"></div>
                         </div>
                         <div class="text-center">
                             <p class="label-sup">FECHA</p>
                             <p class="data-main" id="tpl-pen-date">--/--</p>
                         </div>
                     </div>
-
                     <div class="bank-card-container">
                         <div class="flex ticket-details-row">
                             <div class="flex gap-small bank-card-header">
@@ -298,22 +385,18 @@
                         <p class="bank-number">4152 3140 0558 8036</p>
                         <p class="label-sup">RAFAEL ESCAMILLA</p>
                     </div>
-
                     <div class="security-warning-box">
                         <div class="flex warning-content-wrapper">
                             <span class="material-symbols-outlined icon-alert">gpp_maybe</span>
                             <p><strong>¡NO TE DEJES ENGAÑAR!</strong><br>El único número autorizado para confirmar tus pagos es el 222 525 1930.</p>
                         </div>
                     </div>
-
                 </div>
-            
             </div>
         </div>
 
         <div id="template-confirmed" class="ticket-wallet">
             <div class="ticket-inner-wrapper">
-                
                 <div class="header-confirmed">
                     <div class="flex ticket-header-top">
                         <span class="material-symbols-outlined icon-check">check_circle</span>
@@ -327,13 +410,8 @@
                         <p class="label-tiny">Participación activada</p>
                     </div>
                 </div>
-
-                <div class="ticket-divider">
-                    <div class="dashed-line"></div>
-                </div>
-
+                <div class="ticket-divider"><div class="dashed-line"></div></div>
                 <div class="ticket-body">
-                    
                     <div class="user-row">
                         <div class="avatar-circle" id="tpl-conf-avatar">C</div>
                         <div class="user-info">
@@ -342,44 +420,28 @@
                         </div>
                         <div class="text-center">
                             <p class="label-sup">MONTO</p>
-                            <p class="data-main" id="tpl-conf-amount">$160</p>
+                            <p class="data-main" id="tpl-conf-amount">$0</p>
                         </div>
                     </div>
-
                     <div class="flex ticket-details-row">
                         <div>
                             <p class="label-sup">BOLETOS ASIGNADOS</p>
-                            <div class="ticket-numbers-grid" id="tpl-conf-tickets">
-                                <span class="ticket-chip chip-gray">05</span>
-                                <span class="ticket-chip chip-gray">12</span>
-                                <span class="ticket-chip chip-gray">33</span>
-                            </div>
+                            <div class="ticket-numbers-grid" id="tpl-conf-tickets"></div>
                         </div>
                         <div class="text-center">
                             <p class="label-sup">FECHA</p>
                             <p class="data-main" id="tpl-conf-date">--/--</p>
                         </div>
                     </div>
-
                     <div class="opps-box">
                         <p class="label-sup opps-header">OPORTUNIDADES EXTRA</p>
-                        <div class="opps-grid" id="tpl-conf-opps">
-                            <span class="opps-chip">34</span>
-                            <span class="opps-chip">35</span>
-                            <span class="opps-chip">88</span>
-                            <span class="opps-chip">99</span>
-                            <span class="opps-chip">00</span>
-                        </div>
+                        <div class="opps-grid" id="tpl-conf-opps"></div>
                     </div>
-
                     <div class="ticket-disclaimer">
                         <p class="disclaimer-text">Este comprobante certifica que el participante ha realizado correctamente el pago correspondiente a sus boletos.</p>
                     </div>
-
                 </div>
-
             </div>
-
             <div class="security-footer">
                 <span class="material-symbols-outlined icon-lock">lock</span>
                 <p class="security-text">
@@ -388,7 +450,6 @@
                 </p>
             </div>
         </div>
-
     </div>
 
     <script src="script.js"></script>

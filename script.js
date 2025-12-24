@@ -10,7 +10,83 @@ let currentGeneratedImage = null; // Variable global para la imagen del ticket
 /* -------------------------------------------------------------------------- */
 /* INICIALIZACIÓN                               */
 /* -------------------------------------------------------------------------- */
-document.addEventListener('DOMContentLoaded', loadFromServer);
+document.addEventListener('DOMContentLoaded', () => {
+    loadFromServer();
+    setupColorSync(); // NUEVO: Iniciar sincronización de colores
+});
+
+/* -------------------------------------------------------------------------- */
+/* UTILIDAD: SINCRONIZACIÓN DE COLORES (TEXTO <-> PICKER) */
+/* -------------------------------------------------------------------------- */
+function setupColorSync() {
+    // Par 1: Crear Rifa
+    syncInputs('r-color', 'r-color-picker');
+    // Par 2: Editar Rifa
+    syncInputs('edit-color', 'edit-color-picker');
+}
+
+function syncInputs(textId, pickerId) {
+    const textInput = document.getElementById(textId);
+    const pickerInput = document.getElementById(pickerId);
+
+    if (!textInput || !pickerInput) return;
+
+    // Si cambio el texto -> Actualiza el picker (si es Hex válido)
+    textInput.addEventListener('input', () => {
+        const val = textInput.value;
+        if (/^#[0-9A-F]{6}$/i.test(val)) {
+            pickerInput.value = val;
+        }
+    });
+
+    // Si cambio el picker -> Actualiza el texto
+    pickerInput.addEventListener('input', () => {
+        textInput.value = pickerInput.value;
+    });
+}
+
+/* -------------------------------------------------------------------------- */
+/* UTILIDAD: GESTIÓN DE TEMAS (COLORES Y LOGO) */
+/* -------------------------------------------------------------------------- */
+function applyTheme(colorHex, logoFileName) {
+    const root = document.documentElement;
+
+    // 1. Aplicar color principal
+    const mainColor = colorHex || '#2563eb'; // Azul por defecto
+    root.style.setProperty('--primary-color', mainColor);
+
+    // 2. Generar y aplicar color suave (Light) automáticamente (opacidad 15%)
+    const lightColor = hexToRgba(mainColor, 0.15); 
+    root.style.setProperty('--primary-light', lightColor);
+
+    // 3. Cambiar Logo
+    const logoImg = document.querySelector('.custom-logo');
+    if (logoImg) {
+        // Si no hay logo definido, usa el por defecto 'Navajas Marizcal.png'
+        logoImg.src = logoFileName || 'Navajas Marizcal.png';
+        
+        // Si el archivo no existe, fallback al original
+        logoImg.onerror = () => { 
+            if(logoImg.src.indexOf('Navajas Marizcal.png') === -1) {
+                logoImg.src = 'Navajas Marizcal.png'; 
+            }
+        }; 
+    }
+}
+
+// Helper para convertir HEX a RGBA con opacidad
+function hexToRgba(hex, alpha) {
+    let c;
+    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+        c= hex.substring(1).split('');
+        if(c.length== 3){
+            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+        }
+        c= '0x'+c.join('');
+        return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+alpha+')';
+    }
+    return '#eff6ff'; // Default si falla
+}
 
 /* -------------------------------------------------------------------------- */
 /* NAVEGACIÓN                                  */
@@ -24,9 +100,10 @@ function showView(viewName) {
     const target = document.getElementById('view-' + viewName);
     if(target) target.classList.remove('hidden');
     
-    // Al volver al home, refrescar la lista
+    // Al volver al home, refrescar la lista y restaurar tema original
     if (viewName === 'home') {
         renderHomeList();
+        applyTheme('#2563eb', 'Navajas Marizcal.png'); // Restaurar azul original
     }
 }
 
@@ -89,14 +166,20 @@ function renderHomeList() {
             const taken = raffle.tickets.filter(t => t.status !== 'available').length;
             const progress = Math.round((taken / total) * 100);
 
+            // Usamos el color de la rifa para diferenciarla
+            const rColor = raffle.themeColor || '#2563eb';
+
             const card = document.createElement('div');
             card.className = 'raffle-summary-card';
+            // Borde izquierdo con el color de la rifa
+            card.style.borderLeft = `5px solid ${rColor}`; 
+
             card.innerHTML = `
                 <div onclick="selectRaffle(${index})">
                     <h4 class="raffle-summary-title">${raffle.title}</h4>
                     <p class="raffle-summary-info">${total} boletos - $${raffle.cost} c/u</p>
                     <div class="progress-track">
-                        <div class="progress-fill" style="width: ${progress}%"></div>
+                        <div class="progress-fill" style="width: ${progress}%; background-color: ${rColor};"></div>
                     </div>
                     <p class="progress-text">${progress}% Ocupado</p>
                 </div>
@@ -115,6 +198,9 @@ function selectRaffle(index) {
     currentRaffleIndex = index;
     currentRaffle = allRaffles[index];
     selectedIndices.clear();
+    
+    // --- APLICAR TEMA VISUAL ---
+    applyTheme(currentRaffle.themeColor, currentRaffle.customLogo);
     
     renderGrid();
     updateStats();
@@ -145,6 +231,10 @@ function handleCreateRaffle(e) {
     const cost = parseInt(document.getElementById('r-cost').value);
     const quantity = parseInt(document.getElementById('r-quantity').value);
     const mode = document.querySelector('input[name="r-mode"]:checked').value;
+
+    // NUEVOS CAMPOS DE TEMA (Leemos del input de texto, que es el "master")
+    const themeColor = document.getElementById('r-color').value;
+    const customLogo = document.getElementById('r-logo').value.trim();
 
     // Generar oportunidades extra
     let extras = [];
@@ -181,11 +271,23 @@ function handleCreateRaffle(e) {
         });
     }
 
-    const newRaffle = { title, prizes, cost, tickets };
+    const newRaffle = { 
+        title, 
+        prizes, 
+        cost, 
+        tickets,
+        themeColor, // Guardamos color
+        customLogo  // Guardamos logo
+    };
+
     allRaffles.push(newRaffle);
     selectRaffle(allRaffles.length - 1);
     saveToServer();
     e.target.reset();
+    
+    // Resetear los colores al default en el formulario
+    document.getElementById('r-color').value = '#2563eb';
+    document.getElementById('r-color-picker').value = '#2563eb';
 }
 
 /* -------------------------------------------------------------------------- */
@@ -195,6 +297,14 @@ function openEditModal() {
     document.getElementById('edit-title').value = currentRaffle.title;
     document.getElementById('edit-prizes').value = currentRaffle.prizes;
     document.getElementById('edit-cost').value = currentRaffle.cost;
+
+    // Cargar valores actuales de tema en AMBOS inputs
+    const color = currentRaffle.themeColor || '#2563eb';
+    document.getElementById('edit-color').value = color;
+    document.getElementById('edit-color-picker').value = color;
+    
+    document.getElementById('edit-logo').value = currentRaffle.customLogo || '';
+
     document.getElementById('modal-edit').classList.remove('hidden');
 }
 
@@ -203,11 +313,20 @@ function saveEditRaffle() {
     const newPrizes = document.getElementById('edit-prizes').value;
     const newCost = parseInt(document.getElementById('edit-cost').value);
 
+    // Capturar nuevos valores de tema (del input de texto)
+    const newColor = document.getElementById('edit-color').value;
+    const newLogo = document.getElementById('edit-logo').value.trim();
+
     if (!newTitle || !newCost) return alert("Título y Costo requeridos");
 
     currentRaffle.title = newTitle;
     currentRaffle.prizes = newPrizes;
     currentRaffle.cost = newCost;
+    currentRaffle.themeColor = newColor;
+    currentRaffle.customLogo = newLogo;
+
+    // Aplicar cambios visuales inmediatamente
+    applyTheme(newColor, newLogo);
 
     saveToServer();
     renderGrid();
@@ -248,10 +367,13 @@ function renderGrid() {
         if (t.status === 'reserved') statusLabel = 'Apartado';
         if (t.status === 'paid') statusLabel = 'Pagado';
 
+        // Estilo condicional para el icono seleccionado usando el color del tema
+        const iconStyle = isSelected ? `color: var(--primary-color);` : (t.status === 'available' ? 'color: #ccc' : '');
+
         card.innerHTML = `
             <div class="flex" style="justify-content: space-between;">
                 <span class="ticket-number">${t.number}</span>
-                <span class="material-symbols-outlined" style="font-size: 28px; color: ${isSelected ? '#2563eb' : '#ccc'}">${icon}</span>
+                <span class="material-symbols-outlined" style="font-size: 28px; ${iconStyle}">${icon}</span>
             </div>
             ${t.client ? `<div class="ticket-client">${t.client}</div>` : `<div class="ticket-status-text">${statusLabel}</div>`}
             <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 5px;">
@@ -265,7 +387,200 @@ function renderGrid() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* SELECCIÓN Y ACCIONES                        */
+/* SELECCIÓN Y ACCIONES (LÓGICA MEJORADA CON MODALES)  */
+/* -------------------------------------------------------------------------- */
+
+// --- 1. Variables Temporales ---
+let pendingBulkStatus = null;
+let pendingRelatedIndices = [];
+let tempPaymentData = null; // Para confirmar pago
+
+// --- 2. Funciones de Ayuda (Búsqueda) ---
+function findRelatedTickets() {
+    const owners = new Set();
+    const phones = new Set();
+
+    selectedIndices.forEach(index => {
+        const t = currentRaffle.tickets[index];
+        if (t.client) owners.add(t.client.trim().toLowerCase());
+        if (t.phone) phones.add(t.phone.trim());
+    });
+
+    const newMatches = [];
+    currentRaffle.tickets.forEach((t, index) => {
+        if (selectedIndices.has(index)) return; 
+
+        const nameMatch = t.client && owners.has(t.client.trim().toLowerCase());
+        const phoneMatch = t.phone && phones.has(t.phone.trim());
+
+        if (nameMatch || phoneMatch) {
+            newMatches.push(index);
+        }
+    });
+    return newMatches;
+}
+
+// --- 3. Función Principal de Acción ---
+function bulkUpdateStatus(status) {
+    if (selectedIndices.size === 0) return alert("Primero selecciona al menos un boleto.");
+
+    const relatedIndices = findRelatedTickets();
+
+    if (relatedIndices.length > 0) {
+        // En lugar de confirm(), abrimos el Modal Cascada
+        pendingBulkStatus = status;
+        pendingRelatedIndices = relatedIndices;
+        
+        // --- LOGICA SINGULAR / PLURAL ---
+        const count = relatedIndices.length;
+        const pText = document.getElementById('cascade-text');
+        
+        if (pText) {
+            if (count === 1) {
+                pText.innerHTML = `El sistema detectó <strong style="color: var(--primary-color); font-size: 1.3rem;">otro boleto</strong> registrado con el mismo Cliente o Teléfono:`;
+            } else {
+                pText.innerHTML = `El sistema detectó otros <strong style="color: var(--primary-color); font-size: 1.3rem;">${count} boletos</strong> registrados con el mismo Cliente o Teléfono:`;
+            }
+        }
+
+        // --- GENERAR FICHAS VISUALES ---
+        const listDiv = document.getElementById('cascade-tickets-list');
+        if (listDiv) {
+            listDiv.innerHTML = '';
+            relatedIndices.forEach(idx => {
+                const tNum = currentRaffle.tickets[idx].number;
+                const chip = document.createElement('span');
+                chip.className = 'ticket-chip chip-gray';
+                chip.innerText = tNum;
+                chip.style.fontSize = '1rem'; 
+                listDiv.appendChild(chip);
+            });
+        }
+        
+        document.getElementById('modal-cascade').classList.remove('hidden');
+    } else {
+        // Si no hay relacionados, ejecución directa
+        executeBulkUpdate(status);
+    }
+}
+
+// --- 4. Respuesta del Modal Cascada ---
+function applyCascade(includeRelated) {
+    if (includeRelated && pendingRelatedIndices.length > 0) {
+        pendingRelatedIndices.forEach(idx => selectedIndices.add(idx));
+        renderGrid(); 
+    }
+    
+    closeModal('modal-cascade');
+    
+    // Pequeño delay
+    setTimeout(() => {
+        if (pendingBulkStatus) {
+            executeBulkUpdate(pendingBulkStatus);
+            pendingBulkStatus = null;
+            pendingRelatedIndices = [];
+        }
+    }, 100);
+}
+
+// --- 5. Ejecución Real (Lógica de Negocio) ---
+function executeBulkUpdate(status) {
+    
+    // CASO PAGAR (ABRIR MODAL DE CONFIRMACIÓN DE DINERO)
+    if (status === 'paid') {
+        let ticketData = { numbers: [], extras: [], total: 0, client: '' };
+        let uniqueClients = new Set();
+
+        selectedIndices.forEach(index => {
+            const t = currentRaffle.tickets[index];
+            if (t.client) {
+                ticketData.client = t.client;
+                uniqueClients.add(t.client);
+            }
+            ticketData.numbers.push(t.number);
+            ticketData.extras.push(...t.extras);
+            ticketData.total += currentRaffle.cost;
+        });
+
+        // Advertencia de múltiples clientes (dejamos confirm simple para este caso raro)
+        if (uniqueClients.size > 1) {
+            if(!confirm(`OJO: Estás pagando boletos de ${uniqueClients.size} clientes diferentes.\n¿Continuar?`)) return;
+        }
+
+        // Si es venta de mostrador sin nombre
+        if (!ticketData.client) {
+            const promptName = prompt("Ingresa el cliente para el ticket:", "Cliente Mostrador");
+            if (promptName) ticketData.client = promptName;
+            else return;
+        }
+
+        // --- MOSTRAR MODAL DE CONFIRMACIÓN DE COBRO ---
+        tempPaymentData = ticketData;
+        
+        // Llenamos el modal
+        safeSetText('conf-total', '$' + ticketData.total);
+        safeSetText('conf-count', selectedIndices.size);
+        safeSetText('conf-client', ticketData.client);
+        
+        // Mostramos modal
+        document.getElementById('modal-confirm-pay').classList.remove('hidden');
+        return; // Detenemos aquí esperando el click del usuario
+    }
+
+    // CASO GENÉRICO (LIBERAR / APARTAR)
+    const actionName = status === 'available' ? 'LIBERAR' : 'APARTAR';
+    if (!confirm(`¿Estás seguro de ${actionName} ${selectedIndices.size} boletos?`)) return;
+    
+    selectedIndices.forEach(index => {
+        currentRaffle.tickets[index].status = status;
+        if (status === 'available') { 
+            currentRaffle.tickets[index].client = ''; 
+            currentRaffle.tickets[index].phone = ''; 
+        }
+    });
+    
+    finalizeAction();
+}
+
+// --- 6. Finalización del Pago (Llamado desde el Modal Confirm Pay) ---
+function finishPaymentAction() {
+    closeModal('modal-confirm-pay');
+    
+    if (!tempPaymentData) return;
+
+    // Ejecutar cambios en la "Base de Datos" local
+    selectedIndices.forEach(index => {
+        currentRaffle.tickets[index].status = 'paid';
+        // Aseguramos que si no tenían nombre, se les ponga el del pagador
+        if (!currentRaffle.tickets[index].client) {
+            currentRaffle.tickets[index].client = tempPaymentData.client;
+        }
+    });
+
+    finalizeActionAndGenerateTicket(tempPaymentData, 'paid');
+    tempPaymentData = null; // Limpiar
+}
+
+// --- 7. Helpers de Finalización ---
+function finalizeAction() {
+    clearSelection();
+    updateStats();
+    renderGrid();
+    saveToServer();
+}
+
+function finalizeActionAndGenerateTicket(data, type) {
+    finalizeAction();
+    generateTicketImage({
+        numbers: data.numbers.join(', '),
+        client: data.client,
+        extras: data.extras,
+        total: data.total
+    }, type);
+}
+
+/* -------------------------------------------------------------------------- */
+/* UI UTILS                                    */
 /* -------------------------------------------------------------------------- */
 function toggleSelection(index) {
     if (selectedIndices.has(index)) selectedIndices.delete(index);
@@ -340,76 +655,6 @@ function confirmReserve() {
     }, 'pending');
 }
 
-function bulkUpdateStatus(status) {
-    if (selectedIndices.size === 0) return;
-
-    // Lógica especial para cuando se paga: GENERAR TICKET
-    if (status === 'paid') {
-        // Recolectar datos ANTES de limpiar la selección
-        let ticketData = { numbers: [], extras: [], total: 0, client: '' };
-        let missingClient = false;
-
-        selectedIndices.forEach(index => {
-            const t = currentRaffle.tickets[index];
-            
-            // Si no tiene nombre (ej. venta directa), pediremos uno o usamos genérico
-            if (!t.client) missingClient = true;
-            else if (!ticketData.client) ticketData.client = t.client;
-
-            ticketData.numbers.push(t.number);
-            ticketData.extras.push(...t.extras);
-            ticketData.total += currentRaffle.cost;
-        });
-
-        // Si no hay cliente asignado (venta directa), pedir nombre rápido
-        if (!ticketData.client) {
-            const promptName = prompt("Estás marcando como pagado pero no hay nombre. Ingresa el cliente para el ticket:", "Cliente Mostrador");
-            if (promptName) ticketData.client = promptName;
-            else return; // Cancelar si no pone nombre
-        }
-
-        // Aplicar cambios
-        selectedIndices.forEach(index => {
-            currentRaffle.tickets[index].status = 'paid';
-            currentRaffle.tickets[index].client = ticketData.client; // Asegurar que tenga nombre
-        });
-
-        if (confirm(`¿Marcar ${selectedIndices.size} boletos como PAGADOS y generar ticket?`)) {
-            clearSelection();
-            updateStats();
-            renderGrid();
-            saveToServer();
-
-            // Generar Ticket Azul (Pagado)
-            generateTicketImage({
-                numbers: ticketData.numbers.join(', '),
-                client: ticketData.client,
-                extras: ticketData.extras,
-                total: ticketData.total
-            }, 'paid');
-            return;
-        } else {
-            return; // Cancelado por usuario
-        }
-    }
-
-    // Lógica normal para otros estados (Available / Liberar)
-    if (!confirm('¿Confirmar cambio de estado?')) return;
-    
-    selectedIndices.forEach(index => {
-        currentRaffle.tickets[index].status = status;
-        if (status === 'available') { 
-            currentRaffle.tickets[index].client = ''; 
-            currentRaffle.tickets[index].phone = ''; 
-        }
-    });
-    
-    clearSelection();
-    updateStats();
-    renderGrid();
-    saveToServer();
-}
-
 function updateStats() {
     const counts = { available: 0, reserved: 0, paid: 0 };
     currentRaffle.tickets.forEach(t => counts[t.status]++);
@@ -420,7 +665,7 @@ function updateStats() {
 }
 
 /* -------------------------------------------------------------------------- */
-/* GENERACIÓN DE TICKET (NUEVO SISTEMA HTML2CANVAS CORREGIDO)                 */
+/* GENERACIÓN DE TICKET (HTML2CANVAS)                 */
 /* -------------------------------------------------------------------------- */
 
 async function generateTicketImage(data, type = 'pending') {
@@ -471,7 +716,6 @@ async function generateTicketImage(data, type = 'pending') {
         safeSetText('tpl-conf-name', clientName);
         safeSetText('tpl-conf-amount', `$${data.total}.00`);
         
-        // CORRECCIÓN: Usamos tpl-conf-date. Si no existe en HTML, no pasa nada.
         safeSetText('tpl-conf-date', dateStr); 
 
         // Boletos (Chips Azules)
@@ -559,7 +803,6 @@ function exportReportImage() {
 }
 
 // FUNCION HELPER DE SEGURIDAD
-// Esto evita que el código se rompa si borras un ID en el HTML
 function safeSetText(id, text) {
     const el = document.getElementById(id);
     if (el) el.innerText = text;
