@@ -1,5 +1,5 @@
 /* =========================================
-   1. RESET GLOBAL
+   1. RESET & NORMALIZATION
 ========================================= */
 * {
     box-sizing: border-box;
@@ -8,7 +8,7 @@
 }
 
 /* =========================================
-   2. VARIABLES & BASE
+   2. VARIABLES (:ROOT)
 ========================================= */
 :root {
     /* Paleta de Colores */
@@ -16,19 +16,22 @@
     --success-color: #22c55e;
     --warning-color: #f97316;
     --cancel-color:  #ef4444;
-
-    /* Fondos y Textos */
-    --bg-color:      #f3f4f6;
-    --card-bg:       #ffffff;
     --text-dark:     #1f2937;
 
-    /* UI */
+    /* Fondos */
+    --bg-color:      #f3f4f6;
+    --card-bg:       #ffffff;
+
+    /* UI System */
     --border-radius: 16px;
 }
 
+/* =========================================
+   3. BASE STYLES
+========================================= */
 body {
-    padding: 1.25rem;
     margin: 0;
+    padding: 1.25rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: var(--text-dark);
@@ -36,7 +39,7 @@ body {
 }
 
 /* =========================================
-   3. UTILITIES
+   4. UTILITIES
 ========================================= */
 .hidden {
     display: none !important;
@@ -63,7 +66,7 @@ body {
 }
 
 /* =========================================
-   4. CONTAINERS & CARDS
+   5. LAYOUT & CONTAINERS
 ========================================= */
 .main-container {
     max-width: 1024px;
@@ -71,8 +74,10 @@ body {
 }
 
 /* =========================================
-   5. BUTTONS
+   6. GLOBAL COMPONENTS
 ========================================= */
+
+/* --- Buttons --- */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -122,9 +127,7 @@ body {
     font-size: 1.5rem;
 }
 
-/* =========================================
-   6. FORMS
-========================================= */
+/* --- Forms --- */
 .form-group {
     margin-bottom: 20px;
 }
@@ -137,8 +140,8 @@ body {
 }
 
 .form-input {
-    width: 100%;
     box-sizing: border-box;
+    width: 100%;
     padding: 15px;
     border: 2px solid #d1d5db;
     font-size: 1.2rem;
@@ -150,145 +153,251 @@ body {
     outline: none;
 }
 
-/* =========================================
-   7. TICKET GRID (VISTA DE GESTIÓN)
-========================================= */
-.ticket-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 15px;
-    margin: 1rem;
+/* --- Modals --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
 }
 
-.ticket-card {
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 25px rgba(0,0,0,0.2);
+}
+
+/* =========================================
+   7. MODULE: HEADER BRANDING (MARIZCAL)
+========================================= */
+.raffle-header {
     position: relative;
+    padding: 24px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border: 1px solid #eff6ff;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.header-content-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+@media (min-width: 768px) {
+    .header-content-wrapper {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.header-logo-section {
+    display: flex;
+    justify-content: center;
+    padding-right: 1.25rem;
+    border-right: 1px solid #f1f5f9;
+}
+
+@media (max-width: 512px) {
+    .header-logo-section {
+        padding-right: 0;
+        border-right: none;
+    }
+}
+
+.brand-logo-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 256px;
+}
+
+.custom-logo {
+    display: block;
+    max-width: 256px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.header-info-section {
+    flex: 1;
+    width: 100%;
+}
+
+.header-flex-row {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1rem;
-    border: 3px solid #e5e7eb;
-    text-align: center;
-    background: white;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
+    gap: 20px;
 }
 
-.ticket-card:hover {
-    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-    transform: translateY(-5px);
-}
-
-.ticket-card.selected {
-    border-color: var(--primary-color);
-    background-color: #eff6ff;
-}
-
-.ticket-card.status-reserved {
-    border-color: var(--warning-color);
-    background-color: #fff7ed;
-}
-
-.ticket-card.status-paid {
-    border-color: var(--success-color);
-    background-color: #f0fdf4;
-}
-
-.ticket-number {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #374151;
-}
-
-.ticket-status-text {
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: #6b7280;
-    text-transform: uppercase;
-}
-
-.ticket-client {
-    overflow: hidden;
-    white-space: nowrap;
-    font-size: 0.9rem;
-    font-weight: bold;
+/* Text & Badges */
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    font-size: 1em;
+    font-weight: 600;
     color: var(--primary-color);
     text-transform: uppercase;
-    text-overflow: ellipsis;
+    background-color: #dbeafe;
+    border-radius: 12px;
 }
 
-/* =========================================
-   8. STATS BAR & ACTION BAR
-========================================= */
-.stats-bar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.25rem;
+.header-main-title {
+    margin: 0 0 12px 0;
+    font-size: 2em;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #0f172a;
 }
 
-.stat-box {
-    padding: 15px;
-    border-left: 5px solid #ccc;
-    text-align: center;
-    background: white;
+.text-brand {
+    color: var(--primary-color);
+}
+
+.header-subtitle {
+    margin: 0;
+    font-size: 1.25em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.header-fraud-notice {
+    padding: 1rem 0;
+    font-size: 1.25em;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-transform: uppercase;
+}
+
+.footer-subtitle {
+    padding-bottom: 1rem;
+    font-size: 1.25em;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-transform: uppercase;
+}
+
+/* Cards within Header */
+.header-cards-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+@media (min-width: 640px) {
+    .header-cards-group {
+        flex-direction: row;
+    }
+}
+
+.info-card {
+    padding: 16px;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.stat-box.avail {
-    border-color: #9ca3af;
+.prize-card {
+    flex: 1;
+    min-width: 200px;
+    border: 1px solid #e2e8f0;
+    background: linear-gradient(to bottom right, #f8fafc, #ffffff);
 }
 
-.stat-box.reserved {
-    border-color: var(--warning-color);
-}
-
-.stat-box.paid {
-    border-color: var(--success-color);
-}
-
-.stat-number {
-    display: block;
-    font-size: 1.8rem;
-    font-weight: bold;
-}
-
-.action-bar {
-    position: sticky;
-    top: 10px;
-    z-index: 100;
+.card-label {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 15px;
-    color: white;
-    background: #1e3a8a;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    animation: slideDown 0.3s ease;
+    gap: 5px;
+    margin: 0 0 10px 0;
+    font-size: 1em;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-50px);
+.icon-gold {
+    font-size: 16px;
+    color: #eab308;
+}
+
+.prize-text {
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #334155;
+    white-space: pre-line;
+}
+
+@media (max-width: 512px) {
+    .prize-text {
+        font-size: 1em;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+}
+
+.cost-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 140px;
+    text-align: center;
+    color: white;
+    background-color: var(--primary-color);
+    transition: transform 0.2s;
+}
+
+.cost-card:hover {
+    transform: translateY(-4px);
+}
+
+.cost-label {
+    display: block;
+    font-size: 1em;
+    font-weight: 600;
+    color: #bfdbfe;
+    text-transform: uppercase;
+}
+
+.cost-amount-wrapper {
+    margin: 5px 0;
+}
+
+.cost-amount {
+    font-size: 3em;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.currency {
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.8;
 }
 
 /* =========================================
-   9. RAFFLE LIST (HOME)
+   8. MODULE: HOME (RAFFLE LIST)
 ========================================= */
 .raffle-list-container {
-    padding-top: 20px;
     margin-top: 50px;
+    padding-top: 20px;
     border-top: 1px solid #e5e7eb;
     text-align: left;
 }
@@ -383,233 +492,163 @@ body {
 }
 
 /* =========================================
-   10. MODALES
+   9. MODULE: MANAGEMENT GRID
 ========================================= */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
+.ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin: 1rem;
 }
 
-.modal-content {
-    width: 90%;
-    max-width: 500px;
-    padding: 30px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 25px rgba(0,0,0,0.2);
-}
-
-/* =========================================
-   11. HEADER ESTILO "MARIZCAL"
-========================================= */
-.raffle-header {
-    position: relative;
-    padding: 24px;
-    margin-bottom: 30px;
-    overflow: hidden;
-    border: 1px solid #eff6ff;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-.header-content-wrapper {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-@media (min-width: 768px) {
-    .header-content-wrapper {
-        flex-direction: row;
-        align-items: center;
+@media (max-width: 512px) {
+    .ticket-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-.header-logo-section {
-    display: flex;
-    justify-content: center;
-    padding-right: 1.25rem;
-    border-right: 1px solid #f1f5f9;
-}
-
-.custom-logo {
-    display: block;
-    max-width: 256px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-}
-
-.brand-logo-container {
+.ticket-card {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 256px;
-}
-
-.header-info-section {
-    flex: 1;
-    width: 100%;
-}
-
-.header-flex-row {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 20px;
+    padding: 1rem;
+    border: 3px solid #e5e7eb;
+    text-align: center;
+    background: white;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.badge-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding: 4px 12px;
-    font-size: 1em;
-    font-weight: 600;
-    color: var(--primary-color);
-    text-transform: uppercase;
-    background-color: #dbeafe;
-    border-radius: 12px;
-}
-
-.header-main-title {
-    margin: 0 0 12px 0;
-    font-size: 2em;
-    font-weight: 800;
-    line-height: 1.2;
-    color: #0f172a;
-}
-
-.text-brand {
-    color: var(--primary-color);
-}
-
-.header-subtitle {
-    margin: 0;
-    font-size: 1.25em;
-    font-weight: 600;
-    color: #64748b;
-}
-
-.header-fraud-notice {
-    padding-bottom: 1rem;
-    font-size: 1.25em;
-    font-weight: 800;
-    color: var(--primary-color);
-    text-transform: uppercase;
-}
-
-.footer-subtitle {
-    padding-bottom: 1rem;
-    font-size: 1.25em;
-    font-weight: 800;
-    color: var(--primary-color);
-    text-transform: uppercase;
-}
-
-.header-cards-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-@media (min-width: 640px) {
-    .header-cards-group {
-        flex-direction: row;
+@media (max-width: 512px) {
+    .ticket-card {
+        padding: 0.5rem;
     }
 }
 
-.info-card {
-    padding: 16px;
+.ticket-card:hover {
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+}
+
+.ticket-card.selected {
+    border-color: var(--primary-color);
+    background-color: #eff6ff;
+}
+
+.ticket-card.status-reserved {
+    border-color: var(--warning-color);
+    background-color: #fff7ed;
+}
+
+.ticket-card.status-paid {
+    border-color: var(--success-color);
+    background-color: #f0fdf4;
+}
+
+.ticket-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: #374151;
+}
+
+@media (max-width: 512px) {
+    .ticket-number {
+        font-size: 1.5rem;
+    }
+}
+
+.ticket-status-text {
+    font-size: 0.75em;
+    font-weight: bold;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.ticket-client {
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 1em;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 512px) {
+    .ticket-client {
+        font-size: 0.75em;
+    }
+}
+
+/* =========================================
+   10. MODULE: STATS & ACTIONS
+========================================= */
+.stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+}
+
+.stat-box {
+    padding: 15px;
+    border-left: 5px solid #ccc;
+    text-align: center;
+    background: white;
     border-radius: 12px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.prize-card {
-    flex: 1;
-    min-width: 200px;
-    border: 1px solid #e2e8f0;
-    background: linear-gradient(to bottom right, #f8fafc, #ffffff);
+.stat-box.avail {
+    border-color: #9ca3af;
 }
 
-.card-label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin: 0 0 10px 0;
-    font-size: 1em;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+.stat-box.reserved {
+    border-color: var(--warning-color);
 }
 
-.icon-gold {
-    font-size: 16px;
-    color: #eab308;
+.stat-box.paid {
+    border-color: var(--success-color);
 }
 
-.prize-text {
-    font-size: 1.25em;
-    font-weight: 600;
-    line-height: 1.4;
-    color: #334155;
-    white-space: pre-line;
-}
-
-.cost-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 140px;
-    text-align: center;
-    color: white;
-    background-color: var(--primary-color);
-    transition: transform 0.2s;
-}
-
-.cost-card:hover {
-    transform: translateY(-4px);
-}
-
-.cost-label {
+.stat-number {
     display: block;
-    font-size: 1em;
-    font-weight: 600;
-    color: #bfdbfe;
-    text-transform: uppercase;
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
-.cost-amount-wrapper {
-    margin: 5px 0;
+.action-bar {
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px;
+    color: white;
+    background: #1e3a8a;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease;
 }
 
-.cost-amount {
-    font-size: 3em;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.currency {
-    font-size: 0.8rem;
-    font-weight: 500;
-    opacity: 0.8;
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* =========================================
-   12. ESTILOS DE TICKET (WALLET / COMPROBANTE)
+   11. MODULE: TICKET GENERATION (WALLET)
 ========================================= */
 #ticket-generation-container {
     position: absolute;
@@ -617,6 +656,7 @@ body {
     left: -9999px;
 }
 
+/* Base Wallet Style */
 .ticket-wallet {
     position: relative;
     padding: 1.5rem;
@@ -631,6 +671,7 @@ body {
     width: 336px;
 }
 
+/* Ticket Header (Pending/Confirmed) */
 .header-pending {
     padding: 2.5rem 1.5rem;
     border-top-left-radius: 1.5rem;
@@ -713,7 +754,7 @@ body {
     font-size: 2rem;
 }
 
-/* Divisor con recorte circular */
+/* Ticket Divider (Dashed) */
 .ticket-divider {
     position: relative;
     display: flex;
@@ -748,7 +789,7 @@ body {
     border-top: 2px dashed #e5e7eb;
 }
 
-/* Cuerpo del Ticket */
+/* Ticket Body */
 .ticket-body {
     padding: 1.5rem;
     padding-top: 0.75rem;
@@ -757,6 +798,7 @@ body {
     border-bottom-right-radius: 1.5rem;
 }
 
+/* Customer Section */
 .ticket-customer-section {
     margin-bottom: 1.5rem;
     text-align: center;
@@ -790,7 +832,11 @@ body {
     padding-right: 0.75rem;
 }
 
-/* Información Bancaria */
+.ticket-details-row {
+    justify-content: space-between;
+}
+
+/* Bank & Payments */
 .bank-card-container {
     position: relative;
     margin-top: 0.5rem;
@@ -798,32 +844,6 @@ body {
     border: 1px solid #f3f4f6;
     background-color: #f9fafb;
     border-radius: 0.75rem;
-}
-
-.security-warning-box {
-    margin-top: 1rem;
-    padding: 0.75rem 1rem;
-    border: 1px solid #fbdfbb;
-    font-size: 0.75rem;
-    line-height: 1.4;
-    text-align: center;
-    color: #9b5908;
-    background-color: #fef3e7;
-    border-radius: 0.5rem;
-}
-
-.warning-content-wrapper {
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.icon-alert {
-    font-size: 1.25rem;
-}
-
-.ticket-details-row {
-    justify-content: space-between;
 }
 
 .bank-card-header {
@@ -856,7 +876,30 @@ body {
     letter-spacing: 0.05em;
 }
 
-/* Números y Chips */
+/* Security Warnings */
+.security-warning-box {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #fbdfbb;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: center;
+    color: #9b5908;
+    background-color: #fef3e7;
+    border-radius: 0.5rem;
+}
+
+.warning-content-wrapper {
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.icon-alert {
+    font-size: 1.25rem;
+}
+
+/* Ticket Numbers Chips */
 .ticket-numbers-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -884,6 +927,7 @@ body {
     background-color: #fef3e7;
 }
 
+/* Opportunities Section */
 .opps-box {
     margin-top: 0.5rem;
     padding: 0.75rem;
@@ -915,6 +959,7 @@ body {
     border-radius: 0.5rem;
 }
 
+/* Disclaimer & Footer */
 .ticket-disclaimer {
     margin-top: 1rem;
     padding: 1rem;
@@ -951,6 +996,7 @@ body {
     color: var(--primary-color);
 }
 
+/* Helpers within Tickets */
 .label-sup {
     display: block;
     font-size: 0.75em;
