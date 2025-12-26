@@ -25,8 +25,7 @@
 
             <div id="existing-raffles-container" class="raffle-list-container hidden">
                 <h3 class="section-title">Tus Rifas Activas</h3>
-                <div id="raffles-list">
-                    </div>
+                <div id="raffles-list"></div>
             </div>
         </div>
 
@@ -53,23 +52,19 @@
                     <div class="form-group card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                         <h4 style="margin-top:0; color:#475569;">Personalización Visual</h4>
                         <div class="flex gap-medium" style="flex-wrap: wrap;">
-                            
                             <div class="form-group" style="flex: 1; min-width: 200px;">
                                 <label class="form-label">Color del Tema (Hex)</label>
                                 <div class="flex" style="align-items: center; gap: 10px;">
                                     <input type="color" id="r-color-picker" value="#2563eb" style="width: 50px; height: 42px; border: none; cursor: pointer; padding: 0; background: none;">
-                                    
                                     <input type="text" id="r-color" class="form-input" value="#2563eb" placeholder="#000000" maxlength="7" style="font-family: monospace; letter-spacing: 1px; text-transform: uppercase;">
                                 </div>
                                 <small style="color: #94a3b8; font-size: 0.8rem;">Pega aquí tu código o usa el cuadro.</small>
                             </div>
-
                             <div class="form-group" style="flex: 2; min-width: 200px;">
                                 <label class="form-label">Logo (Nombre de archivo)</label>
                                 <input type="text" id="r-logo" class="form-input" placeholder="Ej. logo-navidad.png">
                                 <small style="color: #94a3b8;">Debe estar en la misma carpeta que el index.html</small>
                             </div>
-
                         </div>
                     </div>
 
@@ -114,6 +109,9 @@
                     <button onclick="showView('home')" class="btn btn-secondary">
                         <span class="material-symbols-outlined">arrow_back</span> Volver
                     </button>
+                    <button onclick="renderOrdersView()" class="btn btn-secondary">
+                        <span class="material-symbols-outlined">list_alt</span> Participantes
+                    </button>
                     <button onclick="openEditModal()" class="btn btn-primary">
                         <span class="material-symbols-outlined">edit</span> Editar Datos
                     </button>
@@ -139,7 +137,6 @@
             </div>
 
             <div id="capture-area">
-
                 <div class="text-center header-fraud-notice">
                     ¡Evita fraudes! Todos los pagos y aclaraciones únicamente al 222 525 1930.
                 </div>
@@ -151,19 +148,17 @@
                                 <img src="Navajas Marizcal.png" alt="Logo Marizcal" class="custom-logo">
                             </div>
                         </div>
-        
                         <div class="header-info-section">
                             <div class="header-flex-row">
                                 <div>
                                     <div class="badge-pill">Sorteo Especial</div>
                                     <h2 class="header-main-title">
-                                        ¡Gran rifa! <span id="m-title" class="text-brand">Cargando...</span>
+                                        ¡Gran Rifa! <span id="m-title" class="text-brand">Cargando...</span>
                                     </h2>
                                     <p class="header-subtitle">
                                         Tu oportunidad de ganar comienza con Rifas Marizcal.
                                     </p>
                                 </div>
-        
                                 <div class="header-cards-group">
                                     <div class="info-card prize-card">
                                         <h3 class="card-label">
@@ -171,7 +166,6 @@
                                         </h3>
                                         <p id="m-prizes" class="prize-text">Cargando premios...</p>
                                     </div>
-        
                                     <div class="info-card cost-card">
                                         <span class="cost-label">Costo Boleto</span>
                                         <div class="cost-amount-wrapper">
@@ -198,9 +192,47 @@
                 </div>
 
                 <div id="tickets-container" class="ticket-grid"></div>
-                
                 <div class="text-center footer-subtitle">
                     Lista de participantes actualizada al momento.
+                </div>
+            </div>
+        </div>
+
+        <div id="view-orders" class="hidden">
+            <div class="card">
+                <div class="flex" style="align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <div class="flex" style="align-items: center; gap: 15px;">
+                        <button onclick="showView('manage')" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">arrow_back</span> Regresar
+                        </button>
+                        <h2 style="margin:0; color: var(--primary-color);">Lista de Participantes</h2>
+                    </div>
+                    <div class="flex gap-small">
+                        <button onclick="renderOrdersView('all')" class="btn btn-cancel" style="font-size: 0.8rem;">Todos</button>
+                        <button onclick="renderOrdersView('reserved')" class="btn btn-warning" style="font-size: 0.8rem;">Por Cobrar</button>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                        <thead>
+                            <tr style="background-color: #f8fafc; color: #64748b; text-align: left;">
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Cliente</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Fecha</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Boletos</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Deuda / Total</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Estado</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0; text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div id="no-orders-msg" class="text-center hidden" style="padding: 40px; color: #94a3b8;">
+                    <span class="material-symbols-outlined" style="font-size: 48px;">inbox</span>
+                    <p>No hay participantes registrados aún.</p>
                 </div>
             </div>
         </div>
@@ -211,14 +243,12 @@
         <div class="modal-content">
             <h3>Datos del Cliente</h3>
             <p>Boletos a apartar: <span id="modal-ticket-ids" style="font-weight: bold; color: var(--primary-color);"></span></p>
-            
             <div class="form-group">
                 <input type="text" id="input-name" class="form-input" placeholder="Nombre completo">
             </div>
             <div class="form-group">
                 <input type="tel" id="input-phone" class="form-input" placeholder="Teléfono (Opcional)">
             </div>
-
             <div class="flex gap-medium">
                 <button onclick="closeModal('modal-reserve')" class="btn btn-secondary" style="flex: 1;">Cancelar</button>
                 <button onclick="confirmReserve()" class="btn btn-primary" style="flex: 1;">Confirmar</button>
@@ -232,19 +262,15 @@
                 <span class="material-symbols-outlined" style="font-size: 50px; color: var(--primary-color);">group_add</span>
                 <h3 style="color: var(--text-dark); margin-top: 10px;">Boletos Relacionados</h3>
             </div>
-            
             <p id="cascade-text" style="font-size: 1.1rem; text-align: center; margin-bottom: 15px;">
                 </p>
-
             <div id="cascade-tickets-list" class="flex" style="justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; max-height: 150px; overflow-y: auto;">
                 </div>
-
             <div class="card" style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; margin-bottom: 25px; border-radius: 12px; text-align: center;">
                 <p style="font-size: 0.95rem; color: #64748b; margin: 0;">
                     ¿Deseas aplicar la acción a <b>TODOS</b> ellos o solo a los que seleccionaste manualmente?
                 </p>
             </div>
-            
             <div class="flex flex-col gap-small">
                 <button onclick="applyCascade(true)" class="btn btn-primary btn-large" style="font-size: 1rem;">
                     Sí, incluir a todos
@@ -265,7 +291,6 @@
                 <span class="material-symbols-outlined" style="font-size: 48px; color: var(--success-color);">payments</span>
             </div>
             <h3 style="color: var(--text-dark); margin-bottom: 10px;">Confirmar Cobro</h3>
-            
             <div class="card" style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; margin-bottom: 20px; border-radius: 12px;">
                 <p style="margin: 0; font-size: 0.9rem; color: #166534;">Total a Recibir</p>
                 <h2 style="margin: 5px 0; font-size: 2.5rem; color: var(--success-color);" id="conf-total">$0</h2>
@@ -273,11 +298,9 @@
                     Por <span id="conf-count" style="font-weight: bold;">0</span> boletos
                 </p>
             </div>
-
             <p style="margin-bottom: 20px; color: #64748b;">
                 Cliente: <strong id="conf-client" style="color: var(--primary-color);">---</strong>
             </p>
-
             <div class="flex flex-col gap-small">
                 <button onclick="finishPaymentAction()" class="btn btn-success btn-large">
                     <span class="material-symbols-outlined">check_circle</span> Confirmar y Generar Ticket
@@ -293,7 +316,6 @@
         <div class="modal-content">
             <h3>Editar Datos de la Rifa</h3>
             <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">Puedes corregir los datos visuales o de negocio.</p>
-            
             <div class="form-group">
                 <label class="form-label">Título</label>
                 <input type="text" id="edit-title" class="form-input">
@@ -302,13 +324,11 @@
                 <label class="form-label">Premios</label>
                 <textarea id="edit-prizes" class="form-input" rows="3"></textarea>
             </div>
-            
             <div class="flex gap-medium">
                 <div class="form-group" style="flex:1;">
                     <label class="form-label">Costo ($)</label>
                     <input type="number" id="edit-cost" class="form-input">
                 </div>
-                
                 <div class="form-group" style="flex:1;">
                     <label class="form-label">Color del Tema (Hex)</label>
                     <div class="flex" style="align-items: center; gap: 8px;">
@@ -317,12 +337,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="form-group">
                 <label class="form-label">Logo (Nombre de archivo)</label>
                 <input type="text" id="edit-logo" class="form-input">
             </div>
-
             <div class="flex gap-medium">
                 <button onclick="closeModal('modal-edit')" class="btn btn-secondary" style="flex: 1;">Cancelar</button>
                 <button onclick="saveEditRaffle()" class="btn btn-primary" style="flex: 1;">Guardar Cambios</button>
@@ -332,9 +350,7 @@
 
     <div id="modal-ticket" class="modal-overlay hidden" style="z-index: 1100;">
         <div class="modal-content text-center" style="max-width: 450px; background: transparent; box-shadow: none; padding: 0;">
-            
             <div id="generated-ticket-img-container" style="margin-bottom: 20px;"></div>
-
             <div class="flex flex-col gap-small" style="background: white; padding: 20px; border-radius: 16px;">
                 <h3 style="margin: 0 0 10px 0; color: var(--primary-color);">¡Ticket Listo!</h3>
                 <button onclick="downloadGeneratedTicket()" class="btn btn-warning btn-large">
