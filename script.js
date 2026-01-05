@@ -611,31 +611,43 @@ function renderOrdersView(filter = 'all') {
     });
 }
 
-// NUEVA FUNCIÓN PARA RE-GENERAR EL TICKET DESDE LA LISTA
+// NUEVA FUNCIÓN MEJORADA: Busca por nombre y teléfono normalizados
 function reprintTicket(name, phone) {
-    // 1. Encontrar todos los boletos de este cliente
-    const userTickets = currentRaffle.tickets.filter(t => t.client === name && t.phone === phone);
+    // 1. Normalizamos los datos de búsqueda
+    // Quitamos espacios extra y pasamos a minúsculas
+    const searchName = name.trim().toLowerCase();
+    
+    // Dejamos SOLO números para el teléfono (super seguro contra espacios y guiones)
+    const searchPhone = phone.replace(/\D/g, ''); 
+
+    // 2. Filtrar boletos
+    const userTickets = currentRaffle.tickets.filter(t => {
+        const tName = (t.client || '').trim().toLowerCase();
+        // Limpiamos también el teléfono de la base de datos
+        const tPhone = (t.phone || '').replace(/\D/g, ''); 
+        
+        return tName === searchName && tPhone === searchPhone;
+    });
     
     if (userTickets.length === 0) return alert("Error: No se encontraron boletos para este cliente.");
 
-    // 2. Determinar si es "Paid" o "Pending" (Si debe algo, es Pending)
+    // 2. Determinar estado
     const hasDebt = userTickets.some(t => t.status === 'reserved');
     const type = hasDebt ? 'pending' : 'paid';
 
-    // 3. Construir objeto de datos
+    // 3. Datos del ticket
     const numbers = userTickets.map(t => t.number);
-    const extras = userTickets.flatMap(t => t.extras); // Unir todos los arrays de extras
-    // Calculamos el total basado en el costo actual de la rifa por el num de boletos
+    const extras = userTickets.flatMap(t => t.extras); 
     const total = userTickets.length * currentRaffle.cost;
 
     const data = {
         numbers: numbers.join(', '),
-        client: name,
+        client: name, // Usamos el nombre original recibido para el display
         extras: extras,
         total: total
     };
 
-    // 4. Llamar al generador existente
+    // 4. Generar
     generateTicketImage(data, type);
 }
 
@@ -669,7 +681,6 @@ async function generateTicketImage(data, type = 'pending') {
 
     // CALCULAR NOMBRE DEL ARCHIVO PARA DESCARGA
     const statusLabel = type === 'paid' ? 'Pagado' : 'Apartado';
-    // Limpiamos el nombre para que sea seguro en un archivo (sin acentos raros ni espacios)
     const safeName = (data.client || "Cliente").replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]/g, "").trim().replace(/\s+/g, "_");
     currentTicketFilename = `Ticket-${statusLabel}-${safeName}.png`;
 
