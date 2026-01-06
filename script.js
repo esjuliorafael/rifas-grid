@@ -175,7 +175,7 @@ function deleteRaffle(index) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* CREAR / EDITAR                                  */
+/* CREAR / EDITAR (LÓGICA MATEMÁTICA CORREGIDA)    */
 /* -------------------------------------------------------------------------- */
 function handleCreateRaffle(e) {
     e.preventDefault();
@@ -187,24 +187,73 @@ function handleCreateRaffle(e) {
     const themeColor = document.getElementById('r-color').value;
     const customLogo = document.getElementById('r-logo').value.trim();
 
-    let extras = [];
-    let startExtra = quantity + 1;
-    for (let i = startExtra; i <= 99; i++) {
-        extras.push(i.toString().padStart(2, '0'));
-    }
-    if (quantity !== 33) extras.push("00");
-    if (mode === 'random') extras.sort(() => Math.random() - 0.5);
-
     let tickets = [];
-    const chances = (quantity === 25) ? 3 : (quantity === 33) ? 2 : 1;
 
+    // --- PREPARACIÓN PARA MODO ALEATORIO (BOLSA DE NÚMEROS) ---
+    let randomPool = [];
+    if (mode === 'random') {
+        if (quantity === 33) {
+            // Rango 34-99 (Sin 00)
+            for (let j = 34; j <= 99; j++) randomPool.push(j.toString().padStart(2, '0'));
+        } else if (quantity === 25) {
+            // Rango 26-99 + 00
+            for (let j = 26; j <= 99; j++) randomPool.push(j.toString().padStart(2, '0'));
+            randomPool.push("00");
+        } else if (quantity === 50) {
+            // Rango 51-99 + 00
+            for (let j = 51; j <= 99; j++) randomPool.push(j.toString().padStart(2, '0'));
+            randomPool.push("00");
+        }
+        // Mezclar la bolsa
+        randomPool.sort(() => Math.random() - 0.5);
+    }
+
+    // --- GENERACIÓN DE BOLETOS ---
     for (let i = 1; i <= quantity; i++) {
         let tNum = i.toString().padStart(2, '0');
         let myExtras = [];
-        for (let c = 0; c < chances; c++) if (extras.length) myExtras.push(extras.shift());
-        if (mode === 'random') myExtras.sort();
+
+        if (mode === 'linear') {
+            // --- LÓGICA LINEAL (MATEMÁTICA) ---
+            if (quantity === 33) {
+                // Saltos de 33. Ej: 1 -> 34 -> 67
+                myExtras.push((i + 33).toString().padStart(2, '0'));
+                myExtras.push((i + 66).toString().padStart(2, '0'));
+            } 
+            else if (quantity === 25) {
+                // Saltos de 25. Ej: 1 -> 26 -> 51 -> 76. (100 = 00)
+                let e1 = i + 25;
+                let e2 = i + 50;
+                let e3 = i + 75;
+                
+                myExtras.push(e1 === 100 ? "00" : e1.toString().padStart(2, '0'));
+                myExtras.push(e2 === 100 ? "00" : e2.toString().padStart(2, '0'));
+                myExtras.push(e3 === 100 ? "00" : e3.toString().padStart(2, '0'));
+            } 
+            else if (quantity === 50) {
+                // Saltos de 50. Ej: 1 -> 51. (100 = 00)
+                let e1 = i + 50;
+                myExtras.push(e1 === 100 ? "00" : e1.toString().padStart(2, '0'));
+            }
+        } else {
+            // --- LÓGICA ALEATORIA (SACAR DE LA BOLSA) ---
+            const chances = (quantity === 25) ? 3 : (quantity === 33) ? 2 : 1;
+            for (let c = 0; c < chances; c++) {
+                if (randomPool.length > 0) {
+                    myExtras.push(randomPool.shift());
+                }
+            }
+            myExtras.sort(); // Ordenar visualmente (ej. 05, 88)
+        }
         
-        tickets.push({ number: tNum, extras: myExtras, status: 'available', client: '', phone: '', date: null });
+        tickets.push({ 
+            number: tNum, 
+            extras: myExtras, 
+            status: 'available', 
+            client: '', 
+            phone: '', 
+            date: null 
+        });
     }
 
     const newRaffle = { title, prizes, cost, tickets, themeColor, customLogo };
@@ -278,7 +327,7 @@ function renderGrid() {
         if (!isSelected && t.status === 'paid') icon = 'verified';
         if (!isSelected && t.status === 'reserved') icon = 'person';
         let statusLabel = t.status === 'available' ? 'Disponible' : (t.status === 'reserved' ? 'Apartado' : 'Pagado');
-        const iconStyle = isSelected ? `color: var(--primary-color);` : (t.status === 'available' ? 'color: #ccc' : '');
+        const iconStyle = isSelected ? `color: var(--primary-color);` : (t.status === 'available' ? 'color: #d7d7d7' : '');
 
         card.innerHTML = `
             <div class="flex" style="justify-content: space-between;">
@@ -287,7 +336,7 @@ function renderGrid() {
             </div>
             ${t.client ? `<div class="ticket-client">${t.client}</div>` : `<div class="ticket-status-text">${statusLabel}</div>`}
             <div style="margin-top: auto; border-top: 1px solid #eee; padding-top: 5px;">
-                <small style="color: #999; font-size: 0.8rem;">OPORTUNIDADES</small><br>
+                <small style="color: #9a9a9a; font-size: 0.8rem;">OPORTUNIDADES</small><br>
                 <strong style="color: #555;">${t.extras.join(', ')}</strong>
             </div>
         `;
@@ -656,9 +705,9 @@ function sendWhatsAppReminder(phone, name, tickets, debt, type) {
     const finalPhone = cleanPhone.length === 10 ? '521' + cleanPhone : cleanPhone; 
     let message = '';
     if (type === 'debt') {
-        message = `Hola *${name}*, te saludamos de Rifas Marizcal.\n\nTe recordamos que tienes apartados los boletos: *${tickets}*.\n\nMonto pendiente: *$${debt}*.\n\nPor favor envíanos tu comprobante de pago para asegurar tu participación. ¡Mucha suerte!`;
+        message = `Hola *${name}*, te saludamos de Rifas Marizcal 👋.\n\nTe recordamos que tienes apartados los boletos: *${tickets}*.\nMonto pendiente: *$${debt}*.\n\nPor favor envíanos tu comprobante para asegurar tu participación. ¡Mucha suerte! 🍀`;
     } else {
-        message = `Hola *${name}*, confirmamos que tus boletos *${tickets}* están 100% PAGADOS.\n\n¡Gracias por tu apoyo y mucha suerte en la rifa!`;
+        message = `Hola *${name}*, confirmamos que tus boletos *${tickets}* están 100% PAGADOS.\n\n¡Gracias por tu apoyo y mucha suerte en la rifa! 🎟️✨`;
     }
     const url = `https://wa.me/${finalPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');

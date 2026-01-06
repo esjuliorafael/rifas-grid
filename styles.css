@@ -14,8 +14,8 @@
     /* Paleta de Colores */
     --primary-color: #1e40af;
     --primary-light: #eff6ff;
-    --success-color: #22c55e;
-    --warning-color: #f97316;
+    --success-color: #03a64a;
+    --warning-color: #f27405;
     --cancel-color:  #ef4444;
     --text-dark:     #1f2937;
 
@@ -180,10 +180,19 @@ body {
 /* =========================================
    7. MODULE: HEADER BRANDING (MARIZCAL)
 ========================================= */
+
+/* NUEVA CLASE PARA ENVOLVER EL ÁREA DE CAPTURA */
+.raffle-visual-wrapper {
+    background-color: var(--primary-light);
+    margin-top: 1.25rem;
+    padding: 0 1.25rem;
+    border-radius: 1.5rem;
+}
+
 .raffle-header {
     position: relative;
-    padding: 24px;
-    margin-bottom: 30px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
     overflow: hidden;
     border: 1px solid #eff6ff;
     background: white;
@@ -267,7 +276,7 @@ body {
     font-size: 2em;
     font-weight: 800;
     line-height: 1.2;
-    color: #0f172a;
+    color: #404040;
 }
 
 .text-brand {
@@ -278,7 +287,7 @@ body {
     margin: 0;
     font-size: 1.25em;
     font-weight: 600;
-    color: #64748b;
+    color: #6c6c6c;
 }
 
 .header-fraud-notice {
@@ -290,7 +299,7 @@ body {
 }
 
 .footer-subtitle {
-    padding-bottom: 1rem;
+    padding: 1rem 0;
     font-size: 1.25em;
     font-weight: 800;
     color: var(--primary-color);
@@ -319,8 +328,8 @@ body {
 .prize-card {
     flex: 1;
     min-width: 200px;
-    border: 1px solid #e2e8f0;
-    background: linear-gradient(to bottom right, #f8fafc, #ffffff);
+    border: 1px solid #e4e4e4;
+    background: linear-gradient(to bottom right, #f2f2f2, #ffffff);
 }
 
 .card-label {
@@ -344,7 +353,7 @@ body {
     font-size: 1.25em;
     font-weight: 600;
     line-height: 1.4;
-    color: #334155;
+    color: #404040;
     white-space: pre-line;
 }
 
@@ -499,7 +508,7 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 1rem;
-    margin: 1rem;
+    margin: 2rem 1rem 0 1rem;
 }
 
 @media (max-width: 512px) {
@@ -514,7 +523,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     padding: 1rem;
-    border: 3px solid #e5e7eb;
+    border: 3px solid #d7d7d7;
     text-align: center;
     background: white;
     border-radius: 0.75rem;
@@ -535,24 +544,24 @@ body {
 
 .ticket-card.selected {
     border-color: var(--primary-color);
-    background-color: var(--primary-light);
+    background-color: white;
 }
 
 .ticket-card.status-reserved {
     border-color: var(--warning-color);
-    background-color: #fff7ed;
+    background-color: #fff2e9;
 }
 
 .ticket-card.status-paid {
     border-color: var(--success-color);
-    background-color: #f0fdf4;
+    background-color: #edf7ee;
 }
 
 .ticket-number {
     display: block;
     font-size: 2.5rem;
     font-weight: 900;
-    color: #374151;
+    color: #404040;
 }
 
 @media (max-width: 512px) {
@@ -564,7 +573,7 @@ body {
 .ticket-status-text {
     font-size: 1em;
     font-weight: bold;
-    color: #6b7280;
+    color: #6c6c6c;
     text-transform: uppercase;
 }
 
@@ -573,7 +582,7 @@ body {
     white-space: nowrap;
     font-size: 1em;
     font-weight: bold;
-    color: var(--primary-color);
+    color: #6c6c6c;
     text-transform: uppercase;
     text-overflow: ellipsis;
 }
@@ -631,7 +640,7 @@ body {
     gap: 15px;
     padding: 15px;
     color: white;
-    background: #1e3a8a;
+    background-color: var(--primary-color);
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: slideDown 0.3s ease;
