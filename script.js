@@ -145,7 +145,7 @@ function showView(viewName) {
 /* BACKEND                                         */
 /* -------------------------------------------------------------------------- */
 async function saveToServer() {
-    if (currentRaffleIndex !== null && currentRaffle) {
+    if (currentRaffleIndex !== null && currentRaffle && currentRaffleIndex < allRaffles.length) {
         allRaffles[currentRaffleIndex] = currentRaffle;
     }
     
@@ -255,7 +255,7 @@ function selectRaffle(index) {
 function deleteRaffle(index) {
     if (!confirm("¿Borrar esta rifa? No hay vuelta atrás.")) return;
     allRaffles.splice(index, 1);
-    if (currentRaffleIndex === index) { currentRaffleIndex = null; currentRaffle = null; }
+    if (currentRaffleIndex === index) { currentRaffleIndex = null; currentRaffle = null; } else if (currentRaffleIndex > index) { currentRaffleIndex--; }
     saveToServer();
     renderHomeList();
 }
