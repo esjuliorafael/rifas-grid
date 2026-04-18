@@ -23,6 +23,15 @@
                 Crear Nueva Rifa
             </button>
 
+            <div class="flex gap-small" style="justify-content: center; margin-bottom: 40px; flex-wrap: wrap;">
+                <button onclick="showView('settings')" class="btn btn-secondary" style="font-size: 1rem; padding: 10px 20px;">
+                    <span class="material-symbols-outlined">settings</span> Configuración
+                </button>
+                <button onclick="showView('audit')" class="btn btn-secondary" style="font-size: 1rem; padding: 10px 20px;">
+                    <span class="material-symbols-outlined">history</span> Registro de Cancelaciones
+                </button>
+            </div>
+
             <div id="existing-raffles-container" class="raffle-list-container hidden">
                 <h3 class="section-title">Tus Rifas Activas</h3>
                 <div id="raffles-list"></div>
@@ -59,11 +68,6 @@
                                     <input type="text" id="r-color" class="form-input" value="#2563eb" placeholder="#000000" maxlength="7" style="font-family: monospace; letter-spacing: 1px; text-transform: uppercase;">
                                 </div>
                                 <small style="color: #94a3b8; font-size: 0.8rem;">Pega aquí tu código o usa el cuadro.</small>
-                            </div>
-                            <div class="form-group" style="flex: 2; min-width: 200px;">
-                                <label class="form-label">Logo (Nombre de archivo)</label>
-                                <input type="text" id="r-logo" class="form-input" placeholder="Ej. logo-navidad.png">
-                                <small style="color: #94a3b8;">Debe estar en la misma carpeta que el index.html</small>
                             </div>
                         </div>
                     </div>
@@ -145,7 +149,7 @@
                     <div class="header-content-wrapper">
                         <div class="header-logo-section">
                             <div class="brand-logo-container">
-                                <img src="Navajas Marizcal.png" alt="Logo Marizcal" class="custom-logo">
+                                <img id="dynamic-logo-img" alt="Logo Marizcal" class="custom-logo">
                             </div>
                         </div>
                         <div class="header-info-section">
@@ -191,6 +195,21 @@
                     </div>
                 </div>
 
+                <div class="ticket-legend">
+                    <div class="legend-item">
+                        <div class="legend-box box-available"></div>
+                        <span class="legend-text">Disponible</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box box-reserved"></div>
+                        <span class="legend-text">Apartado</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box box-paid"></div>
+                        <span class="legend-text">Pagado</span>
+                    </div>
+                </div>
+
                 <div id="tickets-container" class="ticket-grid"></div>
                 <div class="text-center footer-subtitle">
                     Lista de participantes actualizada al momento.
@@ -233,6 +252,74 @@
                 <div id="no-orders-msg" class="text-center hidden" style="padding: 40px; color: #94a3b8;">
                     <span class="material-symbols-outlined" style="font-size: 48px;">inbox</span>
                     <p>No hay participantes registrados aún.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-settings" class="hidden">
+            <div class="card">
+                <div class="flex" style="align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <button onclick="showView('home')" class="btn btn-secondary">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <h2>Configuración del Sistema</h2>
+                </div>
+
+                <div class="form-group card" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div class="flex" style="justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <h4 style="margin: 0; color: var(--primary-color);">Liberación Automática</h4>
+                            <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b;">Quitar el apartado de boletos impagos automáticamente.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="cfg-auto-release">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tiempo Límite (Horas)</label>
+                        <select id="cfg-release-hours" class="form-input" style="background: white;">
+                            <option value="12">12 Horas</option>
+                            <option value="24">24 Horas</option>
+                            <option value="48">48 Horas</option>
+                            <option value="72">72 Horas</option>
+                        </select>
+                    </div>
+
+                    <button onclick="saveSettings()" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Guardar Configuración</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-audit" class="hidden">
+            <div class="card">
+                <div class="flex" style="align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <button onclick="showView('home')" class="btn btn-secondary">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <h2>Registro de Cancelaciones</h2>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                        <thead>
+                            <tr style="background-color: #f8fafc; color: #64748b; text-align: left;">
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Cliente</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Boletos</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Rifa</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Fecha Cancelación</th>
+                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Motivo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-table-body">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div id="no-audit-msg" class="text-center hidden" style="padding: 40px; color: #94a3b8;">
+                    <span class="material-symbols-outlined" style="font-size: 48px;">history</span>
+                    <p>No hay cancelaciones registradas.</p>
                 </div>
             </div>
         </div>
@@ -337,10 +424,6 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Logo (Nombre de archivo)</label>
-                <input type="text" id="edit-logo" class="form-input">
-            </div>
             <div class="flex gap-medium">
                 <button onclick="closeModal('modal-edit')" class="btn btn-secondary" style="flex: 1;">Cancelar</button>
                 <button onclick="saveEditRaffle()" class="btn btn-primary" style="flex: 1;">Guardar Cambios</button>
@@ -371,7 +454,7 @@
                     <div class="ticket-cost-display">
                         <p class="label-tiny">TOTAL A PAGAR</p>
                         <h2 class="amount-large" id="tpl-pen-cost">$0.00</h2>
-                        <p class="label-tiny">Apartado con vigencia de 3 días</p>
+                        <p class="label-tiny" id="tpl-pen-time"></p>
                     </div>
                 </div>
                 <div class="ticket-divider"><div class="dashed-line"></div></div>
@@ -379,6 +462,11 @@
                     <div class="ticket-customer-section">
                         <p class="label-sup">APARTADO A NOMBRE DE</p>
                         <h3 class="data-main" id="tpl-pen-name">Cliente</h3>
+                    </div> 
+                    
+                    <div class="ticket-customer-section">
+                        <p class="label-sup">SORTEO / RIFA</p>
+                        <h3 class="data-main" id="tpl-pen-raffle">---</h3>
                     </div>
                     <div class="flex ticket-details-row">
                         <div>
@@ -439,6 +527,12 @@
                             <p class="data-main" id="tpl-conf-amount">$0</p>
                         </div>
                     </div>
+
+                    <div class="ticket-customer-section">
+                        <p class="label-sup">SORTEO / RIFA</p>
+                        <h3 class="data-main" id="tpl-conf-raffle">---</h3>
+                    </div>
+
                     <div class="flex ticket-details-row">
                         <div>
                             <p class="label-sup">BOLETOS ASIGNADOS</p>

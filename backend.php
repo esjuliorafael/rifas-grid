@@ -17,7 +17,12 @@ if ($metodo === 'GET') {
     if (file_exists($archivo)) {
         echo file_get_contents($archivo);
     } else {
-        echo json_encode([]); // Array vacío por defecto
+        // NUEVA ESTRUCTURA POR DEFECTO
+        echo json_encode([
+            "config" => ["autoReleaseEnabled" => false, "releaseHours" => 24],
+            "auditLog" => [],
+            "raffles" => []
+        ]);
     }
 } 
 elseif ($metodo === 'POST') {
